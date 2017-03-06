@@ -9,6 +9,7 @@ import java.util.UUID;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mephone.fontello.bean.FontSvg;
+import com.mephone.fontello.bean.SvgConfig;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
 import com.mephone.fontello.svg.SVGParser;
@@ -42,33 +43,55 @@ public class FontelloService {
 
     public void doButtonCmd(String cmd, String... args) {
         if (CMD_GEN_CONFIG.equals(cmd)) {
-            generateConfig();
+            SvgConfig config = new SvgConfig();
+            config.setAscent(SystemConfig.DefalutConfig.ascent);
+            config.setUnitsPerEm(SystemConfig.DefalutConfig.unitsPerEm);
+            config.setSvgDir(SystemConfig.FileSystem.SVG_DIR);
+            generateConfig(config);
             doFontello();
         }
     }
-    
+
     private boolean doFontello() {
         File file = new File(SystemConfig.FileSystem.CONFIG_FILE);
         if (!file.exists()) {
             MyLog.i("config.json文件不存在，请重新生成！");
             return false;
         }
-        String cmd = "fontello-cli.cmd --config " + SystemConfig.FileSystem.CONFIG_FILE + " install";
+        String cmd = "fontello-cli.cmd --config "
+                + SystemConfig.FileSystem.CONFIG_FILE + " install";
         boolean complete = false;
         do {
-            System.out.println("start complete:" + complete);
+            complete = false;
+            MyLog.i("start complete:" + complete);
+            MyLog.w("start complete:" + complete);
             String result = Cmd.run(cmd, true);
             if (!TextUtils.isEmpty(result)
                     && result.contains("Install complete")) {
                 complete = true;
             }
-            System.out.println("end complete:" + complete);
+            MyLog.i("end complete:" + complete);
+            MyLog.w("end complete:" + complete);
         } while (!complete);
         return complete;
     }
 
-    private void generateConfig() {
-        List<FontSvg> svgFileList = readSvgFile();
+    public boolean startWork(int step,SvgConfig config) {
+        if (step == 1) {
+            return generateConfig(config);
+        } else if (step == 2) {
+            return doFontello();
+        }
+        return false;
+    }
+
+    private boolean generateConfig(SvgConfig config) {
+        if (config == null) {
+            MyLog.w("没有config.json信息!");
+            MyLog.i("没有config.json信息!");
+            return false;
+        }
+        List<FontSvg> svgFileList = readSvgFile(config.getSvgDir());
         JSONArray glyphsArray = new JSONArray();
         for (FontSvg svg : svgFileList) {
             JSONObject glyphsObject = new JSONObject();
@@ -95,13 +118,13 @@ public class FontelloService {
         configJson.put("css_prefix_text", "icon-");
         configJson.put("css_use_suffix", false);
         configJson.put("hinting", true);
-        configJson.put("units_per_em", 1000);
-        configJson.put("ascent", 850);
+        configJson.put("units_per_em", Integer.parseInt(config.getUnitsPerEm()));
+        configJson.put("ascent", Integer.parseInt(config.getAscent()));
         configJson.put("glyphs", glyphsArray);
 
-        System.out.println("config:" + configJson.toString());
         TextUtils.saveFileText(JsonUtils.formatJson(configJson.toString()),
                 SystemConfig.FileSystem.CONFIG_FILE);
+        return true;
     }
 
     /**
@@ -181,9 +204,9 @@ public class FontelloService {
         return Cmd.run(cmd, false);
     }
 
-    private List<FontSvg> readSvgFile() {
+    private List<FontSvg> readSvgFile(String svgPath) {
         List<FontSvg> result = new ArrayList<FontSvg>();
-        File file = new File(SystemConfig.FileSystem.SVG_DIR);
+        File file = new File(svgPath);
         if (file.exists() && file.isDirectory()) {
             File[] svgFiles = file.listFiles(new FileFilter() {
                 @Override

@@ -10,6 +10,12 @@ public class MyLog {
 
     public static final void i(String msg) {
         if (DEBUG) {
+            System.out.println(msg);
+        }
+    }
+
+    public static final void w(String msg) {
+        if (DEBUG) {
             if (sTextArea == null) {
                 System.out.println(msg);
             } else {

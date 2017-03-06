@@ -34,6 +34,7 @@ public class Cmd {
             }
         } catch (IOException e) {
             MyLog.i("run cmd error:" + e);
+            result = new StringBuffer("");
         } finally {
             if (proc != null) {
                 proc.destroy();
