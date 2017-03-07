@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
@@ -149,7 +150,7 @@ public class TextUtils {
     }
 
     public static String readFile(String path) {
-        String data = null;
+        String data = "";
         // 判断文件是否存在
         File file = new File(path);
         if (!file.exists()) {
@@ -180,6 +181,43 @@ public class TextUtils {
             try {
                 if (isr != null) {
                     isr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return data;
+    }
+
+    public static String readFile(InputStream is) {
+        String data = "";
+        if (is == null) {
+            return data;
+        }
+        InputStreamReader isr = null;
+        try {
+            isr = new InputStreamReader(is, "UTF-8");
+            // 读取文件内容
+            int length = -1;
+            char[] buffer = new char[1024];
+            StringBuffer sb = new StringBuffer();
+            while ((length = isr.read(buffer, 0, 1024)) != -1) {
+                sb.append(buffer, 0, length);
+            }
+            data = new String(sb);
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (isr != null) {
+                    isr.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                if (is != null) {
+                    is.close();
                 }
             } catch (IOException e) {
                 e.printStackTrace();

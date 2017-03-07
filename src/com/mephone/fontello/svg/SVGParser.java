@@ -51,7 +51,6 @@ public class SVGParser {
         FontSvg svg = new FontSvg();
         String name = file.getName().replace(".svg", "");
         svg.setName(name);
-        svg.setUnicode(TextUtils.string2Unicode(name));
         try {
             org.w3c.dom.Document doc = f
                     .createDocument(file.toURI().toString());
@@ -96,6 +95,8 @@ public class SVGParser {
             svg.setPathD(dataD.toString());
             MyLog.i("parserJoinSvg end");
         } catch (Exception e) {
+            MyLog.w("解析svg失败...");
+            MyLog.w(e.toString());
             e.printStackTrace();
         }
         return svg;

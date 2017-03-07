@@ -16,6 +16,8 @@ public class SystemConfig {
 
         public static final String CONFIG_FILE = ROOT_DIR + "config.json";
 
+        public static final String FILE_6763 = ROOT_DIR + "6763.txt";
+
     }
 
     public static class DefalutConfig {

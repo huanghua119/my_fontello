@@ -3,7 +3,9 @@ package com.mephone.fontello;
 import java.io.File;
 import java.io.FileFilter;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import com.alibaba.fastjson.JSONArray;
@@ -23,11 +25,33 @@ public class FontelloService {
 
     public static final String CMD_GEN_CONFIG = "gen_config";
 
+    private Map<String, String> mHaiZiMap = new HashMap<String, String>();
+
     /**
      * 单例
      */
     private FontelloService() {
+        init();
+    }
 
+    private void init() {
+        mHaiZiMap.clear();
+        String text = TextUtils.readFile(SystemConfig.FileSystem.FILE_6763);
+        if (TextUtils.isEmpty(text)) {
+            text = TextUtils.readFile(FontelloService.class
+                    .getResourceAsStream("/com/mephone/fontello/6763.txt"));
+        }
+        String[] lines = text.split("\n");
+        for (String line : lines) {
+            line = line.trim();
+            if (TextUtils.isEmpty(line)) {
+                continue;
+            }
+            String value = line.substring(0, 1).trim();
+            String key = line.substring(1, line.length()).trim();
+            mHaiZiMap.put(key, value);
+            MyLog.i(key + " " + value);
+        }
     }
 
     public static FontelloService getInstance() {
@@ -61,8 +85,10 @@ public class FontelloService {
         String cmd = "fontello-cli.cmd --config "
                 + SystemConfig.FileSystem.CONFIG_FILE + " install";
         boolean complete = false;
+        int count = 0;
         do {
             complete = false;
+            count++;
             MyLog.i("start complete:" + complete);
             MyLog.w("start complete:" + complete);
             String result = Cmd.run(cmd, true);
@@ -72,7 +98,7 @@ public class FontelloService {
             }
             MyLog.i("end complete:" + complete);
             MyLog.w("end complete:" + complete);
-        } while (!complete);
+        } while (!complete && count < 10);
         return complete;
     }
 
@@ -219,6 +245,11 @@ public class FontelloService {
                 FontSvg fs = SVGParser.getInstance().parserFontSvg(
                         svg.getAbsolutePath());
                 if (fs != null) {
+                    if (mHaiZiMap != null && mHaiZiMap.containsKey(fs.getName())) {
+                        String name = mHaiZiMap.get(fs.getName());
+                        fs.setName(name);
+                        fs.setUnicode(TextUtils.string2Unicode(name));
+                    }
                     result.add(fs);
                 }
             }

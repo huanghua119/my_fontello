@@ -29,7 +29,7 @@ public class Cmd {
             while ((line = br.readLine()) != null) {
                 result.append(line);
                 if (showline) {
-                    System.out.println("line: " + line);
+                    MyLog.i("line: " + line);
                 }
             }
         } catch (IOException e) {
