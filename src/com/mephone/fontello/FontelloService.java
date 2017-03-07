@@ -82,7 +82,7 @@ public class FontelloService {
             MyLog.i("config.json文件不存在，请重新生成！");
             return false;
         }
-        String cmd = "fontello-cli.cmd --config "
+        String cmd = "fontello-cli --config "
                 + SystemConfig.FileSystem.CONFIG_FILE + " install";
         boolean complete = false;
         int count = 0;
@@ -225,7 +225,7 @@ public class FontelloService {
 
     private String changePath(String path, float translateX, float translateY,
             float scaleX, float scaleY) {
-        String cmd = "svgpath.cmd \"" + path + "\" " + translateX + " "
+        String cmd = "svgpath \"" + path + "\" " + translateX + " "
                 + translateY + " " + scaleX + " " + scaleY;
         return Cmd.run(cmd, false);
     }

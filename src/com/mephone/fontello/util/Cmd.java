@@ -9,9 +9,17 @@ import com.mephone.fontello.config.MyLog;
 
 public class Cmd {
 
+    private static String OS_NAME = "";
+
     public static String run(String cmd, boolean showline) {
         Runtime rt = Runtime.getRuntime();
 
+        if (TextUtils.isEmpty(OS_NAME)) {
+            OS_NAME = System.getProperty("os.name").toLowerCase();
+        }
+        if (OS_NAME.startsWith("win")) {
+            cmd = "cmd /c " + cmd;
+        }
         MyLog.i("run cmd:" + cmd);
 
         InputStream stderr = null;
