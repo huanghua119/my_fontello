@@ -142,8 +142,8 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mUnitesText.setText(SystemConfig.DefalutConfig.unitsPerEm);
         mAscentText.setText(SystemConfig.DefalutConfig.ascent);
 
-        File configFile = new File(SystemConfig.FileSystem.CONFIG_FILE);
-        if (configFile.exists()) {
+        File[] configFiles = mService.getJsonFile();
+        if (configFiles != null && configFiles.length != 0) {
             mFontelloButton.setEnabled(true);
             MyLog.w("data目录下有配置文件，可以直接生成字库,或重新生成配置文件!");
         }

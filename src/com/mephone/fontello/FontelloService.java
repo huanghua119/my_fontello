@@ -11,6 +11,7 @@ import java.util.UUID;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.mephone.fontello.bean.FontSvg;
+import com.mephone.fontello.bean.FontelloSvg;
 import com.mephone.fontello.bean.SvgConfig;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
@@ -77,29 +78,40 @@ public class FontelloService {
     }
 
     private boolean doFontello() {
-        File file = new File(SystemConfig.FileSystem.CONFIG_FILE);
-        if (!file.exists()) {
+        File[] jsonFile = getJsonFile();
+        if (jsonFile == null || jsonFile.length == 0) {
             MyLog.i("config.json文件不存在，请重新生成！");
             return false;
         }
-        String cmd = "fontello-cli --config "
-                + SystemConfig.FileSystem.CONFIG_FILE + " install";
-        boolean complete = false;
-        int count = 0;
-        do {
-            complete = false;
-            count++;
-            MyLog.i("start complete:" + complete);
-            MyLog.w("start complete:" + complete);
-            String result = Cmd.run(cmd, true);
-            if (!TextUtils.isEmpty(result)
-                    && result.contains("Install complete")) {
-                complete = true;
+
+        boolean ok = true;
+        for (File json : jsonFile) {
+            String cmd = "fontello-cli --config " + json.getAbsolutePath()
+                    + " install";
+            boolean complete = false;
+            int count = 0;
+            do {
+                complete = false;
+                count++;
+                MyLog.i("start complete:" + complete);
+                MyLog.w("start complete:" + complete);
+                String result = Cmd.run(cmd, true);
+                if (!TextUtils.isEmpty(result)
+                        && result.contains("Install complete")) {
+                    complete = true;
+                }
+                MyLog.i("end complete:" + complete);
+                MyLog.w("end complete:" + complete);
+            } while (!complete && count < 10);
+            if (!complete) {
+                ok = false;
+                break;
             }
-            MyLog.i("end complete:" + complete);
-            MyLog.w("end complete:" + complete);
-        } while (!complete && count < 10);
-        return complete;
+        }
+        if (ok) {
+            ok = mergeTTF();
+        }
+        return ok;
     }
 
     public boolean startWork(int step,SvgConfig config) {
@@ -118,38 +130,54 @@ public class FontelloService {
             return false;
         }
         List<FontSvg> svgFileList = readSvgFile(config.getSvgDir());
-        JSONArray glyphsArray = new JSONArray();
-        for (FontSvg svg : svgFileList) {
-            JSONObject glyphsObject = new JSONObject();
-            // FontSvg svg = svgFileList.get(0);
-            String name = svg.getName();
-            String unicode = svg.getUnicode();
+        
+        int size = svgFileList.size() / SystemConfig.DefalutConfig.CONFIG_FILE_SIZE;
+        size = svgFileList.size() % SystemConfig.DefalutConfig.CONFIG_FILE_SIZE == 0 ? size
+                : size + 1;
+        System.out.println("size:" + size);
+        for (int i = 0; i < size; i++) {
+            JSONArray glyphsArray = new JSONArray();
+            for (int j = 0; j < SystemConfig.DefalutConfig.CONFIG_FILE_SIZE; j++) {
+                JSONObject glyphsObject = new JSONObject();
 
-            String newPath = getSvgPath(svg);
-            JSONObject svgObject = new JSONObject();
-            svgObject.put("path", newPath);
-            svgObject.put("width", 1000);
-            String uid = UUID.randomUUID().toString();
-            glyphsObject.put("uid", uid);
-            glyphsObject.put("css", name);
-            glyphsObject.put("code", Integer.parseInt(unicode));
-            glyphsObject.put("src", "custom_icons");
-            glyphsObject.put("selected", true);
-            glyphsObject.put("svg", svgObject);
-            glyphsArray.add(glyphsObject);
+                int index = j + i * SystemConfig.DefalutConfig.CONFIG_FILE_SIZE;
+                if (index >= svgFileList.size()) {
+                    break;
+                }
+
+                FontSvg svg = svgFileList.get(index);
+                String name = svg.getName();
+                String unicode = svg.getUnicode();
+
+                String newPath = getSvgPath(svg);
+                JSONObject svgObject = new JSONObject();
+                svgObject.put("path", newPath);
+                svgObject.put("width", 1000);
+                String uid = UUID.randomUUID().toString();
+                glyphsObject.put("uid", uid);
+                glyphsObject.put("css", name);
+                glyphsObject.put("code", Integer.parseInt(unicode));
+                glyphsObject.put("src", "custom_icons");
+                glyphsObject.put("selected", true);
+                glyphsObject.put("svg", svgObject);
+                glyphsArray.add(glyphsObject);
+            }
+
+            JSONObject configJson = new JSONObject();
+            configJson.put("name", "");
+            configJson.put("css_prefix_text", "icon-");
+            configJson.put("css_use_suffix", false);
+            configJson.put("hinting", true);
+            configJson.put("units_per_em", Integer.parseInt(config.getUnitsPerEm()));
+            configJson.put("ascent", Integer.parseInt(config.getAscent()));
+            configJson.put("glyphs", glyphsArray);
+
+            TextUtils.saveFileText(
+                    JsonUtils.formatJson(configJson.toString()),
+                    SystemConfig.FileSystem.CONFIG_FILE.replace("x", (i + 1)
+                            + ""));
         }
 
-        JSONObject configJson = new JSONObject();
-        configJson.put("name", "");
-        configJson.put("css_prefix_text", "icon-");
-        configJson.put("css_use_suffix", false);
-        configJson.put("hinting", true);
-        configJson.put("units_per_em", Integer.parseInt(config.getUnitsPerEm()));
-        configJson.put("ascent", Integer.parseInt(config.getAscent()));
-        configJson.put("glyphs", glyphsArray);
-
-        TextUtils.saveFileText(JsonUtils.formatJson(configJson.toString()),
-                SystemConfig.FileSystem.CONFIG_FILE);
         return true;
     }
 
@@ -249,11 +277,52 @@ public class FontelloService {
                         String name = mHaiZiMap.get(fs.getName());
                         fs.setName(name);
                         fs.setUnicode(TextUtils.string2Unicode(name));
+                    } else {
+                        fs.setUnicode(TextUtils.string2Unicode(fs.getName()));
                     }
                     result.add(fs);
                 }
             }
         }
         return result;
+    }
+
+    public File[] getJsonFile() {
+        File file = new File(SystemConfig.FileSystem.ROOT_DIR);
+        File[] jsonFile = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isFile()
+                        && pathname.getName().endsWith(".json");
+            }
+        });
+        return jsonFile;
+    }
+
+    public boolean mergeTTF() {
+        File file = new File(".");
+        File[] fontellos = file.listFiles(new FileFilter() {
+            @Override
+            public boolean accept(File pathname) {
+                return pathname.isDirectory()
+                        && pathname.getName().startsWith("fontello");
+            }
+        });
+        List<FontelloSvg> fontellList = new ArrayList<>();
+        for (File f : fontellos) {
+            File ttf = new File(f.getAbsolutePath() + "/font/fontello.svg");
+            if (ttf.exists()) {
+                fontellList.add(SVGParser.getInstance().parserFontelloSvgText(ttf.getAbsolutePath()));
+            }
+        }
+        SVGParser.getInstance().mergeFontellSvgText(SystemConfig.FileSystem.FONTELLO_SVG, fontellList);
+
+        if (new File(SystemConfig.FileSystem.FONTELLO_SVG).exists()) {
+            String cmd = "svg2ttf " + SystemConfig.FileSystem.FONTELLO_SVG
+                    + SystemConfig.FileSystem.FONTELLO_TTF;
+            Cmd.run(cmd, false);
+            return true;
+        }
+        return false;
     }
 }
