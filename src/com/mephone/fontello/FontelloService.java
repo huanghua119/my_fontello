@@ -260,6 +260,7 @@ public class FontelloService {
 
     private String changePath(String path, String translateX,
             String translateY, String scaleX, String scaleY, int type) {
+        path = path.replace(" ", "_");
         String cmd = "svgpath \"" + path + "\" " + translateX + " "
                 + translateY + " " + scaleX + " " + scaleY + " " + type;
         return Cmd.run(cmd, false);

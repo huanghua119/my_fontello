@@ -11,27 +11,29 @@ if (args.length != 6) {
     return;
 }
 
-var path = args[0]
+var path = args[0].replace(/"/g,"").replace(/_/g," ");
+
 var translateX = args[1]
 var translateY = args[2]
 var scaleX = args[3]
 var scaleY = args[4]
 var type = parseInt(args[5])
 
+var scaleX1 = parseFloat(scaleX);
+var scaleY1 = parseFloat(scaleY);
+var translateX1 = parseInt(translateX);
+var translateY1 = parseInt(translateY);
+
 var transformed;
 
 if (type == 1) {
     transformed = new svgpath(path)
-    .translate(translateX, translateY)
-    .scale(scaleX, scaleY)
+    .translate(translateX1, translateY1)
+    .scale(scaleX1, scaleY1)
     .abs()
     .round(1)
     .toString();
 } else if (type == 2) {
-    var scaleX1 = parseFloat(scaleX);
-    var scaleY1 = parseFloat(scaleY);
-    var translateX1 = parseInt(translateX);
-    var translateY1 = parseInt(translateY);
     transformed  = new svgpath(path)
     .scale(scaleX1, scaleY1)
     .translate(translateX1, translateY1)
