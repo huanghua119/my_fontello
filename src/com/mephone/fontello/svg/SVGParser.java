@@ -181,4 +181,34 @@ public class SVGParser {
         TextUtils.saveFileText(svgText, newPath);
     }
 
+    public void generateSVGFont(FontelloSvg svg, String newPath) {
+
+        String ascent = svg.getAscent();
+        String units_per_em = svg.getUnitsPerEm();
+        String descent = svg.getDescent();
+        String familyname = svg.getFontFamily();
+        String glyph = svg.getGlyph();
+        String fontWeight = svg.getFontWeight();
+        String fontStretch = svg.getFontStretch();
+
+        String head = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\"><metadata>huanghua@iekie.com</metadata><defs>";
+
+        String font = "<font id=\"" + familyname + "\" horiz-adv-x=\""
+                + units_per_em + "\" >";
+
+        String fontFace = "<font-face font-family=\"" + familyname
+                + "\" font-weight=\"" + fontWeight + "\" font-stretch=\""
+                + fontStretch + "\" units-per-em=\"" + units_per_em
+                + "\" ascent=\"" + ascent + "\" descent=\"" + descent + "\" />";
+
+        String messGlyph = "<missing-glyph horiz-adv-x=\"" + units_per_em
+                + "\" />";
+
+        String end = "</font></defs></svg>";
+
+        String svgText = head + font + fontFace + messGlyph + glyph + end;
+
+        svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
+        TextUtils.saveFileText(svgText, newPath);
+    }
 }

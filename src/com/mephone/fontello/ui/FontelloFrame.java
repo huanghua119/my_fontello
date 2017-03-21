@@ -142,8 +142,8 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mUnitesText.setText(SystemConfig.DefalutConfig.unitsPerEm);
         mAscentText.setText(SystemConfig.DefalutConfig.ascent);
 
-        File[] configFiles = mService.getJsonFile();
-        if (configFiles != null && configFiles.length != 0) {
+        File configFile = new File(SystemConfig.FileSystem.CONFIG_FILE);
+        if (configFile.exists()) {
             mFontelloButton.setEnabled(true);
             MyLog.w("data目录下有配置文件，可以直接生成字库,或重新生成配置文件!");
         }
@@ -183,7 +183,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private void endFontello(boolean ok) {
         if (ok) {
-            MyLog.w("字库已生成，请查看应用根目录!");
+            MyLog.w("字库已生成，请查看应用data目录!");
         } else {
             MyLog.w("字库生成失败，请重试!");
         }

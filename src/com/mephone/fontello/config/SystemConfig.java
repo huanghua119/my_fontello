@@ -14,7 +14,7 @@ public class SystemConfig {
          */
         public static final String SVG_DIR = ROOT_DIR + "svg/";
 
-        public static final String CONFIG_FILE = ROOT_DIR + "configx.json";
+        public static final String CONFIG_FILE = ROOT_DIR + "config.json";
 
         public static final String FILE_6763 = ROOT_DIR + "6763.txt";
 
@@ -35,7 +35,6 @@ public class SystemConfig {
 
         public static final String unitsPerEm = "1000";
 
-        public static final int CONFIG_FILE_SIZE = 300;
     }
 
 }

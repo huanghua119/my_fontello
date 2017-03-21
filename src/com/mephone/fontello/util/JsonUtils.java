@@ -67,6 +67,11 @@ public class JsonUtils {
         return jsonObject.getString(name);
     }
 
+    public static int getJSONInt(JSONObject jsonObject, String name)
+            throws JSONException {
+        return jsonObject.getIntValue(name);
+    }
+
     public static JSONArray getJSONArray(JSONObject jsonObject, String name)
             throws JSONException {
         if (jsonObject.containsKey(name)) {
