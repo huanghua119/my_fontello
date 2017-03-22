@@ -1,28 +1,28 @@
-1. °²×°node.js, npm
-	ubuntu
-		¹ÙÍø:https://nodejs.org/en/
-		ÏÂÔØ×îĞÂ°æ±¾tar.xzÎÄ¼şºó½âÑ¹  ÏÈxz -d xxx.tar.xz   ÔÙtar xvf xxx.tar
+1. å®‰è£…node.js, npm
+    ubuntu
+        å®˜ç½‘:https://nodejs.org/en/
+        ä¸‹è½½æœ€æ–°ç‰ˆæœ¬tar.xzæ–‡ä»¶åè§£å‹  å…ˆxz -d xxx.tar.xz   å†tar xvf xxx.tar
 
-		ÔÚbinÄ¿Â¼ÏÂ¿ÉÒÔ¿´µ½Á½¸ö¿ÉÖ´ĞĞÎÄ¼ş node ºÍ npm£¬È»ºóÖ´ĞĞ
+        åœ¨binç›®å½•ä¸‹å¯ä»¥çœ‹åˆ°ä¸¤ä¸ªå¯æ‰§è¡Œæ–‡ä»¶ node å’Œ npmï¼Œç„¶åæ‰§è¡Œ
 
-		sudo ln -s /home/ÓÃ»§Ãû/tools/node-v6.9.1-linux-x64/bin/node /usr/local/bin/node
-		sudo ln -s /home/ÓÃ»§Ãû/tools/node-v6.9.1-linux-x64/bin/npm /usr/local/bin/npm
+        sudo ln -s /home/ç”¨æˆ·å/tools/node-v6.9.1-linux-x64/bin/node /usr/local/bin/node
+        sudo ln -s /home/ç”¨æˆ·å/tools/node-v6.9.1-linux-x64/bin/npm /usr/local/bin/npm
 
-	windowsÖ±½Ó¹ÙÍøÏÂÔØ°²×° 
+    windowsç›´æ¥å®˜ç½‘ä¸‹è½½å®‰è£… 
 
-2 °²×°svgpath ºÍ svg2ttf
-	sudo npm install svgpath -g
-	sudo npm install  svg2ttf -g
-		(windowsÏµÍ³²»ĞèÒªsudo)
-	ubuntuÅäÖÃÈíÁ´½Ó
-		1. sudo ln -s /home/ÓÃ»§Ãû/tools/node-v6.9.1-linux-x64/lib/node_modules/svg2ttf/svg2ttf.js /usr/local/bin/svg2ttf
-	windows²»ĞèÒª
+2 å®‰è£…svgpath å’Œ svg2ttf
+    sudo npm install svgpath -g
+    sudo npm install  svg2ttf -g
+        (windowsç³»ç»Ÿä¸éœ€è¦sudo)
+    ubuntué…ç½®è½¯é“¾æ¥
+        1. sudo ln -s /home/ç”¨æˆ·å/tools/node-v6.9.1-linux-x64/lib/node_modules/svg2ttf/svg2ttf.js /usr/local/bin/svg2ttf
+    windowsä¸éœ€è¦
 
 
-3 ÅäÖÃchangePath.jsÎÄ¼ş
-	ubuntu
-		1.½«changePath.jsÎÄ¼ş¸´ÖÆµ½/home/ÓÃ»§Ãû/tools/node-v6.9.1-linux-x64/lib/node_modules/svgpathÄ¿Â¼ÏÂ
-		2.ÅäÖÃÈíÁ´½Ósudo ln -s /home/ÓÃ»§Ãû/tools/node-v6.9.1-linux-x64/lib/node_modules/svgpath/changePath.js /usr/local/bin/svgpath
-	windows
-		1.½«changePath.jsÎÄ¼ş¸´ÖÆµ½C:\Users\ÓÃ»§Ãû\AppData\Roaming\npm\node_modules\svgpathÄ¿Â¼ÏÂ
-		2.svgpathºÍsvgpath.cmdÎÄ¼ş¸´ÖÆµ½C:\UsersÓÃ»§Ãû\AppData\Roaming\npmÄ¿Â¼ÏÂ
+3 é…ç½®changePath.jsæ–‡ä»¶
+    ubuntu
+        1.å°†changePath.jsæ–‡ä»¶å¤åˆ¶åˆ°/home/ç”¨æˆ·å/tools/node-v6.9.1-linux-x64/lib/node_modules/svgpathç›®å½•ä¸‹
+        2.é…ç½®è½¯é“¾æ¥sudo ln -s /home/ç”¨æˆ·å/tools/node-v6.9.1-linux-x64/lib/node_modules/svgpath/changePath.js /usr/local/bin/svgpath
+    windows
+        1.å°†changePath.jsæ–‡ä»¶å¤åˆ¶åˆ°C:\Users\ç”¨æˆ·å\AppData\Roaming\npm\node_modules\svgpathç›®å½•ä¸‹
+        2.svgpathå’Œsvgpath.cmdæ–‡ä»¶å¤åˆ¶åˆ°C:\Usersç”¨æˆ·å\AppData\Roaming\npmç›®å½•ä¸‹
