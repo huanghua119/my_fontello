@@ -130,12 +130,16 @@ public class FontelloService {
             glyph.append(g);
         }
         svg.setGlyph(glyph.toString());
-        SVGParser.getInstance().generateSVGFont(svg,
-                SystemConfig.FileSystem.FONTELLO_SVG);
-        svg2ttf(SystemConfig.FileSystem.FONTELLO_SVG,
-                SystemConfig.FileSystem.FONTELLO_TTF);
+        SVGParser.getInstance().generateSVGFont(
+                svg,
+                SystemConfig.FileSystem.FONTELLO_SVG.replace("fontello",
+                        familyname));
+        svg2ttf(SystemConfig.FileSystem.FONTELLO_SVG.replace("fontello",
+                familyname), SystemConfig.FileSystem.FONTELLO_TTF.replace(
+                "fontello", familyname));
 
-        return new File(SystemConfig.FileSystem.FONTELLO_TTF).exists();
+        return new File(SystemConfig.FileSystem.FONTELLO_TTF.replace(
+                "fontello", familyname)).exists();
     }
 
     public boolean startWork(int step, SvgConfig config) {
