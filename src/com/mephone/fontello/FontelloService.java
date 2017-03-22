@@ -77,6 +77,11 @@ public class FontelloService {
         }
     }
 
+    /**
+     * 读取config文件并生成字库
+     * 
+     * @return
+     */
     private boolean doFontello() {
         File file = new File(SystemConfig.FileSystem.CONFIG_FILE);
         if (!file.exists()) {
@@ -85,7 +90,7 @@ public class FontelloService {
         }
 
         JSONObject configJson = JsonUtils.stringToJSONObject(TextUtils
-                .getFileText(file.getAbsolutePath(), false));
+                .readFile(file.getAbsolutePath()));
 
         int ascent = JsonUtils.getJSONInt(configJson, "ascent");
         int units_per_em = JsonUtils.getJSONInt(configJson, "units_per_em");
@@ -142,6 +147,12 @@ public class FontelloService {
         return false;
     }
 
+    /**
+     * 生成config.json配置文件
+     * 
+     * @param config
+     * @return
+     */
     private boolean generateConfig(SvgConfig config) {
         if (config == null) {
             MyLog.w("没有config.json信息!");
@@ -172,7 +183,7 @@ public class FontelloService {
         }
 
         JSONObject configJson = new JSONObject();
-        configJson.put("name", "");
+        configJson.put("name", config.getName());
         configJson.put("css_prefix_text", "icon-");
         configJson.put("css_use_suffix", false);
         configJson.put("hinting", true);
@@ -183,6 +194,12 @@ public class FontelloService {
 
         TextUtils.saveFileText(JsonUtils.formatJson(configJson.toString()),
                 SystemConfig.FileSystem.CONFIG_FILE);
+        svgFileList.clear();
+        svgFileList = null;
+        configJson.clear();
+        configJson = null;
+        glyphsArray.clear();
+        glyphsArray = null;
 
         return true;
     }
@@ -258,6 +275,17 @@ public class FontelloService {
                 1);
     }
 
+    /**
+     * 改变文字svg图片path路径
+     * 
+     * @param path
+     * @param translateX
+     * @param translateY
+     * @param scaleX
+     * @param scaleY
+     * @param type
+     * @return
+     */
     private String changePath(String path, String translateX,
             String translateY, String scaleX, String scaleY, int type) {
         path = path.replace(" ", "_");
@@ -266,6 +294,12 @@ public class FontelloService {
         return Cmd.run(cmd, false);
     }
 
+    /**
+     * 读取指定目录下载的svg图片
+     * 
+     * @param svgPath
+     * @return
+     */
     private List<FontSvg> readSvgFile(String svgPath) {
         List<FontSvg> result = new ArrayList<FontSvg>();
         File file = new File(svgPath);

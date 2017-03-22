@@ -11,6 +11,7 @@ import org.w3c.dom.NodeList;
 import com.mephone.fontello.bean.FontSvg;
 import com.mephone.fontello.bean.FontelloSvg;
 import com.mephone.fontello.config.MyLog;
+import com.mephone.fontello.config.SystemConfig;
 import com.mephone.fontello.util.TextUtils;
 
 public class SVGParser {
@@ -181,6 +182,12 @@ public class SVGParser {
         TextUtils.saveFileText(svgText, newPath);
     }
 
+    /**
+     * 生成字库svg文件
+     * 
+     * @param svg
+     * @param newPath
+     */
     public void generateSVGFont(FontelloSvg svg, String newPath) {
 
         String ascent = svg.getAscent();
@@ -191,7 +198,8 @@ public class SVGParser {
         String fontWeight = svg.getFontWeight();
         String fontStretch = svg.getFontStretch();
 
-        String head = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\"><metadata>huanghua@iekie.com</metadata><defs>";
+        String head = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 1.1//EN\" \"http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd\"><svg xmlns=\"http://www.w3.org/2000/svg\"><metadata>"
+                + SystemConfig.DefalutConfig.copyRight + "</metadata><defs>";
 
         String font = "<font id=\"" + familyname + "\" horiz-adv-x=\""
                 + units_per_em + "\" >";

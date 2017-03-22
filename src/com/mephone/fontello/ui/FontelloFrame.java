@@ -44,6 +44,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private JTextField mUnitesText;
     private JTextField mAscentText;
+    private JTextField mFontNameText;
 
     private FontelloService mService = FontelloService.getInstance();
     private SvgConfig mConfig = null;
@@ -63,7 +64,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         Dimension dim = this.getToolkit().getScreenSize();
         this.setBounds((int) (dim.getWidth() - M_WIDTH) / 2,
                 (int) (dim.getHeight() - M_WIDTH) / 2, M_WIDTH, M_HEIGHT);
-        this.setTitle("Fontello字体生成器 ");
+        this.setTitle("义启字库生成器 ");
         this.setResizable(false);
         // 禁用窗体的装饰
         // this.setUndecorated(true);
@@ -80,26 +81,37 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mNorthPanel.setLayout(new BoxLayout(mNorthPanel, BoxLayout.Y_AXIS));
         mNorthPanel.setBounds(0, 0, M_WIDTH, 30);
 
-        JPanel jpanel = new JPanel();
-        jpanel.setLayout(new BoxLayout(jpanel, BoxLayout.X_AXIS));
+        JPanel jpanelOne = new JPanel();
+        jpanelOne.setLayout(new BoxLayout(jpanelOne, BoxLayout.X_AXIS));
         mNorthPanel.add(Box.createVerticalStrut(5));
-        mNorthPanel.add(jpanel);
+        mNorthPanel.add(jpanelOne);
         mNorthPanel.add(Box.createVerticalStrut(5));
 
         mUnitesText = new JTextField();
         mAscentText = new JTextField();
         mUnitesText.addKeyListener(mKeyAdapter);
         mAscentText.addKeyListener(mKeyAdapter);
+        mFontNameText = new JTextField();
 
-        jpanel.add(Box.createHorizontalStrut(20));
-        jpanel.add(new JLabel("units_per_em:"));
-        jpanel.add(Box.createHorizontalStrut(10));
-        jpanel.add(mUnitesText);
-        jpanel.add(Box.createHorizontalStrut(50));
-        jpanel.add(new JLabel("ascent:"));
-        jpanel.add(Box.createHorizontalStrut(10));
-        jpanel.add(mAscentText);
-        jpanel.add(Box.createHorizontalStrut(20));
+        jpanelOne.add(Box.createHorizontalStrut(20));
+        jpanelOne.add(new JLabel("units_per_em:"));
+        jpanelOne.add(Box.createHorizontalStrut(10));
+        jpanelOne.add(mUnitesText);
+        jpanelOne.add(Box.createHorizontalStrut(50));
+        jpanelOne.add(new JLabel("ascent:"));
+        jpanelOne.add(Box.createHorizontalStrut(10));
+        jpanelOne.add(mAscentText);
+        jpanelOne.add(Box.createHorizontalStrut(20));
+
+        JPanel jpanelTwo = new JPanel();
+        jpanelTwo.setLayout(new BoxLayout(jpanelTwo, BoxLayout.X_AXIS));
+        mNorthPanel.add(jpanelTwo);
+        mNorthPanel.add(Box.createVerticalStrut(5));
+        jpanelTwo.add(Box.createHorizontalStrut(20));
+        jpanelTwo.add(new JLabel("font_name:"));
+        jpanelTwo.add(Box.createHorizontalStrut(10));
+        jpanelTwo.add(mFontNameText);
+        jpanelTwo.add(Box.createHorizontalStrut(20));
 
         this.add(mNorthPanel, BorderLayout.NORTH);
 
@@ -141,6 +153,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
         mUnitesText.setText(SystemConfig.DefalutConfig.unitsPerEm);
         mAscentText.setText(SystemConfig.DefalutConfig.ascent);
+        mFontNameText.setText(SystemConfig.DefalutConfig.fontName);
 
         File configFile = new File(SystemConfig.FileSystem.CONFIG_FILE);
         if (configFile.exists()) {
@@ -202,6 +215,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
         String ascent = mAscentText.getText();
         String unitsPerEm = mUnitesText.getText();
+        String fontName = mFontNameText.getText();
         if (TextUtils.isEmpty(unitsPerEm)) {
             MyLog.w("请输入 ascent 值!");
             return;
@@ -210,8 +224,13 @@ public class FontelloFrame extends JFrame implements ActionListener {
             MyLog.w("请输入 units_per_em 值!");
             return;
         }
+        if (TextUtils.isEmpty(ascent)) {
+            MyLog.w("字体名称为空,将使用默认名称 !");
+            fontName = SystemConfig.DefalutConfig.fontName;
+        }
         mConfig.setAscent(ascent);
         mConfig.setUnitsPerEm(unitsPerEm);
+        mConfig.setName(fontName);
         mFontelloButton.setEnabled(false);
         mConfigButton.setEnabled(false);
         mSelectButton.setEnabled(false);

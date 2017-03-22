@@ -13,6 +13,7 @@
 2 安装svgpath 和 svg2ttf
 	sudo npm install svgpath -g
 	sudo npm install  svg2ttf -g
+		(windows系统不需要sudo)
 	ubuntu配置软链接
 		1. sudo ln -s /home/用户名/tools/node-v6.9.1-linux-x64/lib/node_modules/svg2ttf/svg2ttf.js /usr/local/bin/svg2ttf
 	windows不需要

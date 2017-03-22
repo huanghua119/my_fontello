@@ -35,6 +35,9 @@ public class SystemConfig {
 
         public static final String unitsPerEm = "1000";
 
+        public static final String fontName = "iekie";
+
+        public static final String copyRight = "Copyright by iekie & huanghua@iekie.com";
     }
 
 }

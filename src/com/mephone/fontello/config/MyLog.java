@@ -15,13 +15,13 @@ public class MyLog {
     }
 
     public static final void w(String msg) {
-        if (DEBUG) {
-            if (sTextArea == null) {
+        if (sTextArea == null) {
+            if (DEBUG) {
                 System.out.println(msg);
-            } else {
-                sTextArea.append(msg + "\n");
-                sTextArea.setCaretPosition(sTextArea.getText().length());
             }
+        } else {
+            sTextArea.append(msg + "\n");
+            sTextArea.setCaretPosition(sTextArea.getText().length());
         }
     }
 
