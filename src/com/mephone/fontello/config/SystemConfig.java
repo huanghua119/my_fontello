@@ -27,6 +27,9 @@ public class SystemConfig {
          * 最终生成的ttf文件
          */
         public static final String FONTELLO_TTF = ROOT_DIR + "fontello.ttf";
+
+        public static final String CACHE_PATH = SystemConfig.FileSystem.ROOT_DIR
+                + ".cache/";
     }
 
     public static class DefalutConfig {
@@ -38,6 +41,11 @@ public class SystemConfig {
         public static final String fontName = "iekie";
 
         public static final String copyRight = "Copyright by iekie & huanghua@iekie.com";
+
+        /**
+         * 缓存数据超时时间
+         */
+        public static final int CACHEL_EXPIRED_TIME = 60 * 60 * 24 * 7;
     }
 
 }

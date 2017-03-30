@@ -9,6 +9,8 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileFilter;
+import java.net.SocketException;
+import java.net.UnknownHostException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -16,6 +18,7 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
@@ -25,6 +28,7 @@ import com.mephone.fontello.FontelloService;
 import com.mephone.fontello.bean.SvgConfig;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
+import com.mephone.fontello.util.CommonUtils;
 import com.mephone.fontello.util.TextUtils;
 
 public class FontelloFrame extends JFrame implements ActionListener {
@@ -71,6 +75,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         // this.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
         init();
         loadData();
+        showNoActiveDialog();
     }
 
     private void init() {
@@ -283,4 +288,19 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
     }
 
+    private void showNoActiveDialog() {
+        if (!FontelloService.getInstance().isActivation()) {
+            String mac = "";
+            try {
+                mac = CommonUtils.getLocalMac();
+            } catch (SocketException e) {
+                e.printStackTrace();
+            } catch (UnknownHostException e) {
+                e.printStackTrace();
+            }
+            JOptionPane.showMessageDialog(this, "请提供电脑的 MAC地址给相关人员\n MAC:" + mac,
+                    "你的电脑未激活!", JOptionPane.ERROR_MESSAGE);
+            System.exit(0);
+        }
+    }
 }

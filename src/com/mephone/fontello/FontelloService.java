@@ -16,7 +16,9 @@ import com.mephone.fontello.bean.SvgConfig;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
 import com.mephone.fontello.svg.SVGParser;
+import com.mephone.fontello.table.ComputerTable;
 import com.mephone.fontello.util.Cmd;
+import com.mephone.fontello.util.CommonUtils;
 import com.mephone.fontello.util.JsonUtils;
 import com.mephone.fontello.util.TextUtils;
 
@@ -27,6 +29,10 @@ public class FontelloService {
     public static final String CMD_GEN_CONFIG = "gen_config";
 
     private Map<String, String> mHaiZiMap = new HashMap<String, String>();
+
+    private ComputerTable mComputerTable = null;
+
+    private boolean isActivation = false;
 
     /**
      * 单例
@@ -53,6 +59,7 @@ public class FontelloService {
             mHaiZiMap.put(key, value);
             MyLog.i(key + " " + value);
         }
+        isActivation = isEffectiveComputer();
     }
 
     public static FontelloService getInstance() {
@@ -345,5 +352,22 @@ public class FontelloService {
             String cmd = "svg2ttf " + path + " " + toPath;
             Cmd.run(cmd, false);
         }
+    }
+
+    public boolean isEffectiveComputer() {
+        if (mComputerTable == null) {
+            mComputerTable = new ComputerTable();
+        }
+        String mac = "";
+        try {
+            mac = CommonUtils.getLocalMac();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return mComputerTable.isEffectiveComputer(mac);
+    }
+
+    public boolean isActivation() {
+        return this.isActivation;
     }
 }
