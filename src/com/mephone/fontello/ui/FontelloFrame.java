@@ -9,8 +9,6 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileFilter;
-import java.net.SocketException;
-import java.net.UnknownHostException;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -290,14 +288,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private void showNoActiveDialog() {
         if (!FontelloService.getInstance().isActivation()) {
-            String mac = "";
-            try {
-                mac = CommonUtils.getLocalMac();
-            } catch (SocketException e) {
-                e.printStackTrace();
-            } catch (UnknownHostException e) {
-                e.printStackTrace();
-            }
+            String mac = CommonUtils.getLocalMac();
             JOptionPane.showMessageDialog(this, "请提供电脑的 MAC地址给相关人员\n MAC:" + mac,
                     "你的电脑未激活!", JOptionPane.ERROR_MESSAGE);
             System.exit(0);

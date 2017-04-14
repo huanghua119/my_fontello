@@ -19,6 +19,7 @@ import com.mephone.fontello.svg.SVGParser;
 import com.mephone.fontello.table.ComputerTable;
 import com.mephone.fontello.util.Cmd;
 import com.mephone.fontello.util.CommonUtils;
+import com.mephone.fontello.util.CutImage;
 import com.mephone.fontello.util.JsonUtils;
 import com.mephone.fontello.util.TextUtils;
 
@@ -27,6 +28,16 @@ public class FontelloService {
     private static FontelloService sService;
 
     public static final String CMD_GEN_CONFIG = "gen_config";
+
+    /**
+     * 切割png图片
+     */
+    public static final String CMD_CUT_PNG = "cut_png";
+
+    /**
+     * png图片转svg图片
+     */
+    public static final String CMD_PNG_2_SVG = "png_2_svg";
 
     private Map<String, String> mHaiZiMap = new HashMap<String, String>();
 
@@ -81,6 +92,34 @@ public class FontelloService {
             config.setSvgDir(SystemConfig.FileSystem.SVG_DIR);
             generateConfig(config);
             doFontello();
+        } else if (CMD_CUT_PNG.equals(cmd)) {
+            File[] pngs = traversePngDir();
+            if (pngs != null) {
+                for (File file : pngs) {
+                    if (file.getName().endsWith(".png")) {
+                        MyLog.i("file:" + file.getAbsolutePath());
+                        try {
+                            String names = TextUtils.getFileText(file
+                                    .getAbsolutePath().replace(".png", ".txt"),
+                                    false);
+                            if (TextUtils.isEmpty(names)
+                                    && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
+                                MyLog.i("字样图片对应的文本文件没找到");
+                            } else {
+                                CutImage.cut2(
+                                        file,
+                                        names,
+                                        SystemConfig.DefalutConfig.sCUT_PNG_COLS,
+                                        SystemConfig.DefalutConfig.sCUT_PNG_ROWS);
+                            }
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        } else if (CMD_PNG_2_SVG.equals(cmd)) {
+            png2svg();
         }
     }
 
@@ -358,16 +397,76 @@ public class FontelloService {
         if (mComputerTable == null) {
             mComputerTable = new ComputerTable();
         }
-        String mac = "";
-        try {
-            mac = CommonUtils.getLocalMac();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        String mac = CommonUtils.getLocalMac();
         return mComputerTable.isEffectiveComputer(mac);
     }
 
     public boolean isActivation() {
         return this.isActivation;
+    }
+
+    /**
+     * 遍历data/png目录
+     * 
+     * @return 返回子文件
+     */
+    public File[] traversePngDir() {
+        File file = new File(SystemConfig.FileSystem.PNG_DIR);
+        if (file.exists() && file.isDirectory()) {
+            return file.listFiles();
+        }
+        return null;
+    }
+
+    /**
+     * 遍历data/png目录下的子目录，将png图片转化为svg文件
+     */
+    public void png2svg() {
+        File[] files = traversePngDir();
+        for (File file : files) {
+            if (file.exists() && file.isDirectory()) {
+                File[] pngs = file.listFiles();
+                for (File png : pngs) {
+                    if (png.exists() && png.getName().endsWith(".png")) {
+                        png2svg(png);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * png图片转化为svg文件
+     * 
+     * @param png
+     */
+    public void png2svg(File png) {
+        if (!png.exists()) {
+            MyLog.i("png2svg error:" + png.getName() + " not found!");
+        }
+        String outDir = png.getParentFile().getAbsolutePath() + "/svg";
+        String name = png.getName();
+
+        File out = new File(outDir);
+        if (!out.exists()) {
+            out.mkdirs();
+        }
+
+        name = outDir + File.separator + name.replace(".png", ".svg");
+
+        String cmd1 = "convert -flatten " + png.getAbsolutePath()
+                + " output.pbm";
+        String cmd2 = "potrace -s output.pbm -o " + name;
+
+        String cmd3 = "rm output.pbm";
+
+        Cmd.run(cmd1, false);
+        Cmd.run(cmd2, false);
+        Cmd.run(cmd3, false);
+    }
+
+    public static void main(String[] args) {
+        FontelloService.getInstance().doButtonCmd(CMD_CUT_PNG, null);
+        FontelloService.getInstance().doButtonCmd(CMD_PNG_2_SVG, null);
     }
 }

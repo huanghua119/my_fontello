@@ -10,6 +10,16 @@ public class SystemConfig {
         public static final String ROOT_DIR = "data/";
 
         /**
+         * 源png目录
+         */
+        public static final String PNG_DIR = ROOT_DIR + "png/";
+
+        /**
+         * 切割png目录
+         */
+        public static final String PNG_CUT_DIR = PNG_DIR + "cut/";
+
+        /**
          * 源svg目录
          */
         public static final String SVG_DIR = ROOT_DIR + "svg/";
@@ -33,6 +43,29 @@ public class SystemConfig {
     }
 
     public static class DefalutConfig {
+
+        public static int sCUT_PNG_COLS = 3;
+
+        public static int sCUT_PNG_ROWS = 3;
+
+        /**
+         * 字块正常宽度
+         */
+        public static int sPNG_WIDTH = 310;
+
+        /**
+         * 字块正常高度
+         */
+        public static int sPNG_HEIGHT = 310;
+
+        /**
+         * 黑边宽度
+         */
+        public static final int PNG_BLACK_SIDE_WIDTH = 0;
+
+        public static final int PNG_BLACK_SIDE_OFFICE = 0;
+
+        public static boolean sPNG_NO_NAME = false;
 
         public static final String ascent = "850";
 

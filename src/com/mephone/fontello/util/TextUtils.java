@@ -36,6 +36,15 @@ public class TextUtils {
         return unicode.toString();
     }
 
+    public static String string2UnicodeHex(String string) {
+        StringBuffer unicode = new StringBuffer();
+        for (int i = 0; i < string.length(); i++) {
+            char c = string.charAt(i);
+            unicode.append(Integer.toHexString(c));
+        }
+        return unicode.toString();
+    }
+
     public static String getFileText(String f, boolean singleLine) {
         File file = new File(f);
         if (!file.exists()) {
