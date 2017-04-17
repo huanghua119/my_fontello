@@ -99,12 +99,11 @@ public class FontelloService {
                     if (file.getName().endsWith(".png")) {
                         MyLog.i("file:" + file.getAbsolutePath());
                         try {
-                            String names = TextUtils.getFileText(file
-                                    .getAbsolutePath().replace(".png", ".txt"),
-                                    false);
+                            String names = TextUtils.readFile(file
+                                    .getAbsolutePath().replace(".png", ".txt"));
                             if (TextUtils.isEmpty(names)
                                     && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
-                                MyLog.i("字样图片对应的文本文件没找到");
+                                MyLog.w("字样图片对应的文本文件没找到");
                             } else {
                                 CutImage.cut2(
                                         file,
@@ -463,10 +462,5 @@ public class FontelloService {
         Cmd.run(cmd1, false);
         Cmd.run(cmd2, false);
         Cmd.run(cmd3, false);
-    }
-
-    public static void main(String[] args) {
-        FontelloService.getInstance().doButtonCmd(CMD_CUT_PNG, null);
-        FontelloService.getInstance().doButtonCmd(CMD_PNG_2_SVG, null);
     }
 }

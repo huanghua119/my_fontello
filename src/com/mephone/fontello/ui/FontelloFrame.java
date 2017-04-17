@@ -16,6 +16,9 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -37,16 +40,31 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private JFileChooser mFileChooser = null;
 
+    private JPanel mFontelloLayout;
     private JPanel mSouthPanel;
     private JPanel mNorthPanel;
     private JButton mConfigButton;
     private JButton mFontelloButton;
     private JButton mSelectButton;
-    private JTextArea mTextArea;
+    private JTextArea mFontelloTextArea;
 
     private JTextField mUnitesText;
     private JTextField mAscentText;
     private JTextField mFontNameText;
+
+    private JPanel mPng2SvgLayout;
+    private JButton mCutPngButton;
+    private JButton mPng2SvgButton;
+    private JTextField mCutRowsText;
+    private JTextField mCutColsText;
+    private JTextField mCutWidthText;
+    private JTextField mCutHeightText;
+    private JTextField mCutSideWidthText;
+    private JTextField mCutSideHeightText;
+    private JTextArea mPng2SvgTextArea;
+
+    private JMenuItem mPng2SvgItem;
+    private JMenuItem mFontelloItem;
 
     private FontelloService mService = FontelloService.getInstance();
     private SvgConfig mConfig = null;
@@ -71,13 +89,121 @@ public class FontelloFrame extends JFrame implements ActionListener {
         // 禁用窗体的装饰
         // this.setUndecorated(true);
         // this.getRootPane().setWindowDecorationStyle(JRootPane.FRAME);
-        init();
+        getContentPane().setLayout(new BorderLayout());
+        createFontelloLayout();
+        createMenuBar();
+        createPngSvgLayout();
+
+        MyLog.setTextArea(mFontelloTextArea);
+        getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
+
         loadData();
         showNoActiveDialog();
     }
 
-    private void init() {
-        this.setLayout(new BorderLayout());
+    private void createMenuBar() {
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("功能");
+        mPng2SvgItem = new JMenuItem("png转svg");
+        mPng2SvgItem.addActionListener(this);
+        mFontelloItem = new JMenuItem("fontello工具");
+        mFontelloItem.addActionListener(this);
+        menu.add(mFontelloItem);
+        menu.add(mPng2SvgItem);
+        menuBar.add(menu);
+        this.setJMenuBar(menuBar);
+    }
+
+    private void createPngSvgLayout() {
+        mPng2SvgLayout = new JPanel();
+        mPng2SvgLayout.setLayout(new BorderLayout());
+
+        JPanel northPanel = new JPanel();
+        northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
+        northPanel.setBounds(0, 0, M_WIDTH, 30);
+        JPanel jpanelOne = new JPanel();
+        jpanelOne.setLayout(new BoxLayout(jpanelOne, BoxLayout.X_AXIS));
+        northPanel.add(Box.createVerticalStrut(5));
+        northPanel.add(jpanelOne);
+        northPanel.add(Box.createVerticalStrut(5));
+
+        mCutColsText = new JTextField();
+        mCutRowsText = new JTextField();
+        mCutWidthText = new JTextField();
+        mCutHeightText = new JTextField();
+        mCutSideWidthText = new JTextField();
+        mCutSideHeightText = new JTextField();
+        mCutColsText.addKeyListener(mKeyAdapter);
+        mCutRowsText.addKeyListener(mKeyAdapter);
+        mCutWidthText.addKeyListener(mKeyAdapter);
+        mCutHeightText.addKeyListener(mKeyAdapter);
+        mCutSideWidthText.addKeyListener(mKeyAdapter);
+        mCutSideHeightText.addKeyListener(mKeyAdapter);
+
+        jpanelOne.add(Box.createHorizontalStrut(20));
+        jpanelOne.add(new JLabel("行:"));
+        jpanelOne.add(Box.createHorizontalStrut(10));
+        jpanelOne.add(mCutRowsText);
+        jpanelOne.add(Box.createHorizontalStrut(50));
+        jpanelOne.add(new JLabel("列:"));
+        jpanelOne.add(Box.createHorizontalStrut(10));
+        jpanelOne.add(mCutColsText);
+        jpanelOne.add(Box.createHorizontalStrut(20));
+
+        JPanel jpanelTwo = new JPanel();
+        jpanelTwo.setLayout(new BoxLayout(jpanelTwo, BoxLayout.X_AXIS));
+        northPanel.add(jpanelTwo);
+        northPanel.add(Box.createVerticalStrut(5));
+        jpanelTwo.add(Box.createHorizontalStrut(20));
+        jpanelTwo.add(new JLabel("宽:"));
+        jpanelTwo.add(Box.createHorizontalStrut(10));
+        jpanelTwo.add(mCutWidthText);
+        jpanelTwo.add(Box.createHorizontalStrut(50));
+        jpanelTwo.add(new JLabel("高:"));
+        jpanelTwo.add(Box.createHorizontalStrut(10));
+        jpanelTwo.add(mCutHeightText);
+        jpanelTwo.add(Box.createHorizontalStrut(20));
+
+        JPanel jpanelThree = new JPanel();
+        jpanelThree.setLayout(new BoxLayout(jpanelThree, BoxLayout.X_AXIS));
+        northPanel.add(jpanelThree);
+        northPanel.add(Box.createVerticalStrut(5));
+        jpanelThree.add(Box.createHorizontalStrut(20));
+        jpanelThree.add(new JLabel("左右黑边:"));
+        jpanelThree.add(Box.createHorizontalStrut(10));
+        jpanelThree.add(mCutSideWidthText);
+        jpanelThree.add(Box.createHorizontalStrut(50));
+        jpanelThree.add(new JLabel("上下黑边:"));
+        jpanelThree.add(Box.createHorizontalStrut(10));
+        jpanelThree.add(mCutSideHeightText);
+        jpanelThree.add(Box.createHorizontalStrut(20));
+
+        mPng2SvgLayout.add(northPanel, BorderLayout.NORTH);
+
+        JPanel southPanel = new JPanel();
+        southPanel.setLayout(new FlowLayout());
+        mPng2SvgLayout.add(southPanel, BorderLayout.SOUTH);
+
+        mCutPngButton = new JButton("图片切割");
+        mCutPngButton.addActionListener(this);
+        southPanel.add(mCutPngButton);
+
+        mPng2SvgButton = new JButton("png转Svg");
+        mPng2SvgButton.addActionListener(this);
+        southPanel.add(mPng2SvgButton);
+
+        mPng2SvgTextArea = new JTextArea();
+        mPng2SvgTextArea.setLineWrap(true);
+        mPng2SvgTextArea.setEditable(false);
+
+        JScrollPane scrollPane = new JScrollPane();
+        scrollPane.setViewportView(mPng2SvgTextArea);
+        mPng2SvgLayout.add(scrollPane, BorderLayout.CENTER);
+    }
+
+    private void createFontelloLayout() {
+        mFontelloLayout = new JPanel();
+        mFontelloLayout.setLayout(new BorderLayout());
 
         mNorthPanel = new JPanel();
 
@@ -116,11 +242,11 @@ public class FontelloFrame extends JFrame implements ActionListener {
         jpanelTwo.add(mFontNameText);
         jpanelTwo.add(Box.createHorizontalStrut(20));
 
-        this.add(mNorthPanel, BorderLayout.NORTH);
+        mFontelloLayout.add(mNorthPanel, BorderLayout.NORTH);
 
         mSouthPanel = new JPanel();
         mSouthPanel.setLayout(new FlowLayout());
-        this.add(mSouthPanel, BorderLayout.SOUTH);
+        mFontelloLayout.add(mSouthPanel, BorderLayout.SOUTH);
 
         mSelectButton = new JButton("选择svg图片");
         mSelectButton.addActionListener(this);
@@ -134,15 +260,14 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mFontelloButton.addActionListener(this);
         mSouthPanel.add(mFontelloButton);
 
-        mTextArea = new JTextArea();
-        mTextArea.setLineWrap(true);
-        mTextArea.setEditable(false);
+        mFontelloTextArea = new JTextArea();
+        mFontelloTextArea.setLineWrap(true);
+        mFontelloTextArea.setEditable(false);
 
         JScrollPane scrollPane = new JScrollPane();
-        scrollPane.setViewportView(mTextArea);
+        scrollPane.setViewportView(mFontelloTextArea);
 
-        this.add(scrollPane, BorderLayout.CENTER);
-        MyLog.setTextArea(mTextArea);
+        mFontelloLayout.add(scrollPane, BorderLayout.CENTER);
 
         mFileChooser = new JFileChooser();
         mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
@@ -163,6 +288,9 @@ public class FontelloFrame extends JFrame implements ActionListener {
             mFontelloButton.setEnabled(true);
             MyLog.w("data目录下有配置文件，可以直接生成字库,或重新生成配置文件!");
         }
+
+        mCutColsText.setText(SystemConfig.DefalutConfig.sCUT_PNG_COLS + "");
+        mCutRowsText.setText(SystemConfig.DefalutConfig.sCUT_PNG_ROWS + "");
     }
 
     @Override
@@ -179,6 +307,20 @@ public class FontelloFrame extends JFrame implements ActionListener {
             buildConfig();
         } else if (e.getSource() == mFontelloButton) {
             startFontello();
+        } else if (e.getSource() == mPng2SvgItem) {
+            getContentPane().remove(mFontelloLayout);
+            getContentPane().add(mPng2SvgLayout, BorderLayout.CENTER);
+            MyLog.setTextArea(mPng2SvgTextArea);
+            mPng2SvgLayout.updateUI();
+        } else if (e.getSource() == mFontelloItem) {
+            getContentPane().remove(mPng2SvgLayout);
+            getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
+            MyLog.setTextArea(mFontelloTextArea);
+            mFontelloLayout.updateUI();
+        } else if (e.getSource() == mCutPngButton) {
+            startCutPng();
+        } else if (e.getSource() == mPng2SvgButton) {
+            startPng2Svg();
         }
     }
 
@@ -286,11 +428,84 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
     }
 
+    private void startCutPng() {
+        String cutCols = mCutColsText.getText();
+        String cutRows = mCutRowsText.getText();
+        String cutWidth = mCutWidthText.getText();
+        String cutHeight = mCutHeightText.getText();
+        String sideWidth = mCutSideWidthText.getText();
+        String sideHeight = mCutSideHeightText.getText();
+        if (!TextUtils.isEmpty(cutCols)) {
+            SystemConfig.DefalutConfig.sCUT_PNG_COLS = Integer
+                    .parseInt(cutCols);
+        } else {
+            SystemConfig.DefalutConfig.sCUT_PNG_COLS = 0;
+        }
+        if (!TextUtils.isEmpty(cutRows)) {
+            SystemConfig.DefalutConfig.sCUT_PNG_ROWS = Integer
+                    .parseInt(cutRows);
+        } else {
+            SystemConfig.DefalutConfig.sCUT_PNG_ROWS = 0;
+        }
+        if (!TextUtils.isEmpty(cutWidth)) {
+            SystemConfig.DefalutConfig.sPNG_WIDTH = Integer.parseInt(cutWidth);
+        } else {
+            SystemConfig.DefalutConfig.sPNG_WIDTH = 0;
+        }
+        if (!TextUtils.isEmpty(cutHeight)) {
+            SystemConfig.DefalutConfig.sPNG_HEIGHT = Integer
+                    .parseInt(cutHeight);
+        } else {
+            SystemConfig.DefalutConfig.sPNG_HEIGHT = 0;
+        }
+        if (!TextUtils.isEmpty(sideWidth)) {
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH = Integer
+                    .parseInt(sideWidth);
+        } else {
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH = 0;
+        }
+        if (!TextUtils.isEmpty(sideHeight)) {
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT = Integer
+                    .parseInt(sideHeight);
+        } else {
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT = 0;
+        }
+        mCutPngButton.setEnabled(false);
+        mPng2SvgButton.setEnabled(false);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                MyLog.w("开始切图.....");
+                mService.doButtonCmd(FontelloService.CMD_CUT_PNG, "");
+                MyLog.w("切图完成,请查看data/png/目录");
+                mCutPngButton.setEnabled(true);
+                mPng2SvgButton.setEnabled(true);
+            }
+        }.start();
+    }
+
+    private void startPng2Svg() {
+        mCutPngButton.setEnabled(false);
+        mPng2SvgButton.setEnabled(false);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                MyLog.w("开始转换.....");
+                mService.doButtonCmd(FontelloService.CMD_PNG_2_SVG, "");
+                MyLog.w("切图完成,请查看data/svg/目录");
+                mCutPngButton.setEnabled(true);
+                mPng2SvgButton.setEnabled(true);
+            }
+        }.start();
+    }
+
     private void showNoActiveDialog() {
         if (!FontelloService.getInstance().isActivation()) {
             String mac = CommonUtils.getLocalMac();
-            JOptionPane.showMessageDialog(this, "请提供电脑的 MAC地址给相关人员\n MAC:" + mac,
-                    "你的电脑未激活!", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "请提供电脑的 MAC地址给相关人员\n MAC:"
+                    + mac, "你的电脑未激活!", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
         }
     }

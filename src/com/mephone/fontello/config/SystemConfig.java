@@ -44,26 +44,31 @@ public class SystemConfig {
 
     public static class DefalutConfig {
 
-        public static int sCUT_PNG_COLS = 3;
+        public static int sCUT_PNG_COLS = 25;
 
-        public static int sCUT_PNG_ROWS = 3;
+        public static int sCUT_PNG_ROWS = 18;
 
         /**
          * 字块正常宽度
          */
-        public static int sPNG_WIDTH = 310;
+        public static int sPNG_WIDTH = 0;
 
         /**
          * 字块正常高度
          */
-        public static int sPNG_HEIGHT = 310;
+        public static int sPNG_HEIGHT = 0;
 
         /**
-         * 黑边宽度
+         * 两则黑边
          */
-        public static final int PNG_BLACK_SIDE_WIDTH = 0;
+        public static int sPNG_BLACK_SIDE_WIDTH = 0;
 
-        public static final int PNG_BLACK_SIDE_OFFICE = 0;
+        /**
+         * 上下黑边
+         */
+        public static int sPNG_BLACK_SIDE_HEIGHT = 0;
+
+        public static int PNG_BLACK_SIDE_OFFICE = 0;
 
         public static boolean sPNG_NO_NAME = false;
 

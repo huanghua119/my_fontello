@@ -39,19 +39,29 @@ public class CutImage {
 
         for (int i = 0; i < rows; i++) {
             for (int j = 0; j < cols; j++) {
-                cWidth = getWidth(j, cols, eWidth, width);
-                cHeight = getHeight(i, rows, eHeight, height);
-                //cWidth = SystemConfig.DefalutConfig.sPNG_WIDTH;
-                //cHeight = SystemConfig.DefalutConfig.sPNG_HEIGHT;
+                if (SystemConfig.DefalutConfig.sPNG_WIDTH != 0) {
+                    cWidth = SystemConfig.DefalutConfig.sPNG_WIDTH;
+                } else {
+                    cWidth = getWidth(j, cols, eWidth, width);
+                }
+                if (SystemConfig.DefalutConfig.sPNG_HEIGHT != 0) {
+                    cHeight = SystemConfig.DefalutConfig.sPNG_HEIGHT;
+                } else {
+                    cHeight = getHeight(i, rows, eHeight, height);
+                }
 
-                int startX = j * (cWidth + SystemConfig.DefalutConfig.PNG_BLACK_SIDE_WIDTH);
-                int startY = i * (cHeight + SystemConfig.DefalutConfig.PNG_BLACK_SIDE_WIDTH);
+                int startX = j * (cWidth + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH);
+                int startY = i * (cHeight + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT);
 
                 int office = SystemConfig.DefalutConfig.PNG_BLACK_SIDE_OFFICE;
+                int endX = cWidth;
+                int endY = cHeight;
 
+                if ((startX + endX) > sWidth) {
+                    office = startX + endX - sWidth;
+                }
                 // x坐标,y坐标,宽度,高度
-                image = source.getSubimage(startX + office, startY + office,
-                        cWidth - office, cHeight - office);
+                image = source.getSubimage(startX, startY, endX - office, endY);
 
                 if (TextUtils.isEmpty(fileNames) && SystemConfig.DefalutConfig.sPNG_NO_NAME) {
                     fileName = targetDir + "/map_" + i + "_" + j + ".png";
@@ -62,8 +72,7 @@ public class CutImage {
                         break;
                     }
                     String name = fileNames.substring(index - 1, index);
-                    fileName = targetDir + "/x"
-                            + TextUtils.string2UnicodeHex(name) + ".png";
+                    fileName = targetDir + "/" + name + ".png";
                     MyLog.i("save unicode:" + name + " fileName:" + fileName);
                 }
                 file = new File(fileName);
