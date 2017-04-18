@@ -90,4 +90,20 @@ public class CommonUtils {
         }
         return macAddress;
     }
+
+    /**
+     * 计算最小值
+     * @param index
+     * @return
+     */
+    public static int calcMin(int... index) {
+        int temp = 10000;
+        for (int i : index) {
+            if (i == -1) {
+                continue;
+            }
+            temp = Math.min(temp, i);
+        }
+        return temp;
+    }
 }

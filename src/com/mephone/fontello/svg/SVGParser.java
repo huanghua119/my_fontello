@@ -1,6 +1,7 @@
 package com.mephone.fontello.svg;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
@@ -8,10 +9,12 @@ import org.apache.batik.util.XMLResourceDescriptor;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
+import com.mephone.fontello.bean.CutSvg;
 import com.mephone.fontello.bean.FontSvg;
 import com.mephone.fontello.bean.FontelloSvg;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
+import com.mephone.fontello.util.CommonUtils;
 import com.mephone.fontello.util.TextUtils;
 
 public class SVGParser {
@@ -218,5 +221,126 @@ public class SVGParser {
 
         svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
         TextUtils.saveFileText(svgText, newPath);
+    }
+
+    public void cutSvg(File svgFile, String names, int cols, int rows,
+            int width, int height) {
+        if (svgFile == null || !svgFile.exists()) {
+            return;
+        }
+
+        String parser = XMLResourceDescriptor.getXMLParserClassName();
+        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+        CutSvg[][] cutSvgArray = new CutSvg[cols][rows];
+
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                cutSvgArray[i][j] = new CutSvg();
+                cutSvgArray[i][j].setCols(i);
+                cutSvgArray[i][j].setRows(j);
+                cutSvgArray[i][j].setWidth(width);
+                cutSvgArray[i][j].setHeight(height);
+            }
+        }
+
+        try {
+            MyLog.i("cutSvg start");
+            org.w3c.dom.Document doc = f.createDocument(svgFile.toURI()
+                    .toString());
+
+            // 解析svg标签
+            NodeList svgList = doc.getElementsByTagName("svg");
+            if (svgList.getLength() != 1) {
+                return;
+            }
+            // 解析path标签
+            NodeList pathList = doc.getElementsByTagName("path");
+            if (pathList == null || pathList.getLength() == 0) {
+                return;
+            }
+            for (int i = 0; i < pathList.getLength(); i++) {
+                Node d = pathList.item(i);
+                org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
+                String data = svgPath.getAttribute("d");
+                // 计算path起始坐标位置
+                int index = CommonUtils
+                        .calcMin(data.indexOf("h"), data.indexOf("H"),
+                                data.indexOf("v"), data.indexOf("V"),
+                                data.indexOf("l"), data.indexOf("L"),
+                                data.indexOf("c"), data.indexOf("C"));
+                String point = data.substring(1, index);
+                String[] points = point.split(",");
+                int c = (int) Double.parseDouble(points[0]) / width;
+                int r = (int) Double.parseDouble(points[1]) / height;
+                CutSvg svg = cutSvgArray[c][r];
+                List<String> dataList = svg.getPathList();
+                if (dataList == null) {
+                    dataList = new ArrayList<String>();
+                    svg.setPathList(dataList);
+                }
+                dataList.add(data);
+                if (!TextUtils.isEmpty(names)) {
+                    // 计算path对应的汉字
+                    int nameIndex = r * cols + c;
+                    String name = names.substring(nameIndex, nameIndex + 1);
+                    svg.setName(name);
+                } else {
+                    String name = "map_" + r + "_" + c;
+                    svg.setName(name);
+                }
+            }
+            MyLog.i("cutSvg end");
+        } catch (Exception e) {
+            MyLog.w("解析svg失败...");
+            MyLog.w(e.toString());
+            e.printStackTrace();
+        }
+        File outDir = new File(svgFile.getAbsolutePath().replace(".svg", ""));
+        if (!outDir.exists()) {
+            outDir.mkdirs();
+        }
+        for (int i = 0; i < cols; i++) {
+            for (int j = 0; j < rows; j++) {
+                CutSvg svg = cutSvgArray[i][j];
+                generateCutSvg(svg, outDir.getAbsolutePath());
+            }
+        }
+    }
+
+    /**
+     * 生成切割的svg图片
+     * 
+     * @param svg
+     * @param newPath
+     */
+    public void generateCutSvg(CutSvg svg, String newPath) {
+        if (svg.getPathList() == null || svg.getPathList().size() == 0) {
+            return;
+        }
+        String head = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">";
+        String svgTag = "<svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" width=\""
+                + svg.getWidth()
+                + "px\" height=\""
+                + svg.getHeight()
+                + "px\" viewBox=\"0 0 "
+                + svg.getWidth()
+                + " "
+                + svg.getHeight() + "\" preserveAspectRatio=\"xMidYMid meet\">";
+        int transX = svg.getCols() * svg.getWidth();
+        int transY = svg.getRows() * svg.getHeight();
+        String gTag = "<g transform=\"translate(-" + transX + ",-" + transY
+                + ")\" >";
+        String pathTag = "";
+        for (String path : svg.getPathList()) {
+            pathTag += "<path d=\"" + path + "\"/>";
+        }
+        String end = "</g></svg>";
+
+        String svgText = head + svgTag + gTag + pathTag + end;
+        svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
+
+        String outPath = newPath + "/" + svg.getName() + ".svg";
+        MyLog.i("generateCutSvg outPath:" + outPath);
+        TextUtils.saveFileText(svgText, outPath);
     }
 }

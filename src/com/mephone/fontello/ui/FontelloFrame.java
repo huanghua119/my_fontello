@@ -54,6 +54,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private JPanel mPng2SvgLayout;
     private JButton mCutPngButton;
+    private JButton mCutSvgButton;
     private JButton mPng2SvgButton;
     private JTextField mCutRowsText;
     private JTextField mCutColsText;
@@ -63,7 +64,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private JTextField mCutSideHeightText;
     private JTextArea mPng2SvgTextArea;
 
-    private JMenuItem mPng2SvgItem;
+    private JMenuItem mPicCutItem;
     private JMenuItem mFontelloItem;
 
     private FontelloService mService = FontelloService.getInstance();
@@ -104,12 +105,12 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private void createMenuBar() {
         JMenuBar menuBar = new JMenuBar();
         JMenu menu = new JMenu("功能");
-        mPng2SvgItem = new JMenuItem("png转svg");
-        mPng2SvgItem.addActionListener(this);
+        mPicCutItem = new JMenuItem("图片切割工具");
+        mPicCutItem.addActionListener(this);
         mFontelloItem = new JMenuItem("fontello工具");
         mFontelloItem.addActionListener(this);
         menu.add(mFontelloItem);
-        menu.add(mPng2SvgItem);
+        menu.add(mPicCutItem);
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
     }
@@ -184,7 +185,11 @@ public class FontelloFrame extends JFrame implements ActionListener {
         southPanel.setLayout(new FlowLayout());
         mPng2SvgLayout.add(southPanel, BorderLayout.SOUTH);
 
-        mCutPngButton = new JButton("图片切割");
+        mCutSvgButton = new JButton("切割svg");
+        mCutSvgButton.addActionListener(this);
+        southPanel.add(mCutSvgButton);
+
+        mCutPngButton = new JButton("切割png");
         mCutPngButton.addActionListener(this);
         southPanel.add(mCutPngButton);
 
@@ -307,7 +312,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
             buildConfig();
         } else if (e.getSource() == mFontelloButton) {
             startFontello();
-        } else if (e.getSource() == mPng2SvgItem) {
+        } else if (e.getSource() == mPicCutItem) {
             getContentPane().remove(mFontelloLayout);
             getContentPane().add(mPng2SvgLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mPng2SvgTextArea);
@@ -321,6 +326,8 @@ public class FontelloFrame extends JFrame implements ActionListener {
             startCutPng();
         } else if (e.getSource() == mPng2SvgButton) {
             startPng2Svg();
+        } else if (e.getSource() == mCutSvgButton) {
+            startCutSvg();
         }
     }
 
@@ -429,6 +436,21 @@ public class FontelloFrame extends JFrame implements ActionListener {
     }
 
     private void startCutPng() {
+        File files[] = mService.traversePngDir();
+        boolean hasPng = false;
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().endsWith(".png")) {
+                    hasPng = true;
+                    break;
+                }
+            }
+        }
+        if (!hasPng) {
+            MyLog.w("data/png目录下没有找到png图片!!!");
+            return;
+        }
+
         String cutCols = mCutColsText.getText();
         String cutRows = mCutRowsText.getText();
         String cutWidth = mCutWidthText.getText();
@@ -472,6 +494,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
         mCutPngButton.setEnabled(false);
         mPng2SvgButton.setEnabled(false);
+        mCutSvgButton.setEnabled(false);
         new Thread() {
             @Override
             public void run() {
@@ -481,6 +504,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 MyLog.w("切图完成,请查看data/png/目录");
                 mCutPngButton.setEnabled(true);
                 mPng2SvgButton.setEnabled(true);
+                mCutSvgButton.setEnabled(true);
             }
         }.start();
     }
@@ -488,6 +512,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private void startPng2Svg() {
         mCutPngButton.setEnabled(false);
         mPng2SvgButton.setEnabled(false);
+        mCutSvgButton.setEnabled(false);
         new Thread() {
             @Override
             public void run() {
@@ -497,6 +522,72 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 MyLog.w("切图完成,请查看data/svg/目录");
                 mCutPngButton.setEnabled(true);
                 mPng2SvgButton.setEnabled(true);
+                mCutSvgButton.setEnabled(true);
+            }
+        }.start();
+    }
+
+    private void startCutSvg() {
+        File files[] = mService.traversePngDir();
+        boolean hasPng = false;
+        if (files != null) {
+            for (File file : files) {
+                if (file.getName().endsWith(".svg")) {
+                    hasPng = true;
+                    break;
+                }
+            }
+        }
+        if (!hasPng) {
+            MyLog.w("data/png目录下没有找到svg图片!!!");
+            return;
+        }
+
+        String cutCols = mCutColsText.getText();
+        String cutRows = mCutRowsText.getText();
+        String cutWidth = mCutWidthText.getText();
+        String cutHeight = mCutHeightText.getText();
+        if (!TextUtils.isEmpty(cutCols)) {
+            SystemConfig.DefalutConfig.sCUT_SVG_COLS = Integer
+                    .parseInt(cutCols);
+        } else {
+            MyLog.w("请输入切割行数!");
+            return;
+        }
+        if (!TextUtils.isEmpty(cutRows)) {
+            SystemConfig.DefalutConfig.sCUT_SVG_ROWS = Integer
+                    .parseInt(cutRows);
+        } else {
+            MyLog.w("请输入切割列数!");
+            return;
+        }
+        if (!TextUtils.isEmpty(cutWidth)) {
+            SystemConfig.DefalutConfig.sCUT_SVG_WIDTH = Integer
+                    .parseInt(cutWidth);
+        } else {
+            mCutWidthText.setText(SystemConfig.DefalutConfig.sCUT_SVG_WIDTH
+                    + "");
+        }
+        if (!TextUtils.isEmpty(cutHeight)) {
+            SystemConfig.DefalutConfig.sCUT_SVG_HEIGHT = Integer
+                    .parseInt(cutHeight);
+        } else {
+            mCutHeightText.setText(SystemConfig.DefalutConfig.sCUT_SVG_HEIGHT
+                    + "");
+        }
+        mCutPngButton.setEnabled(false);
+        mPng2SvgButton.setEnabled(false);
+        mCutSvgButton.setEnabled(false);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                MyLog.w("开始切图.....");
+                mService.doButtonCmd(FontelloService.CMD_CUT_SVG, "");
+                MyLog.w("切图完成,请查看data/png/目录");
+                mCutPngButton.setEnabled(true);
+                mPng2SvgButton.setEnabled(true);
+                mCutSvgButton.setEnabled(true);
             }
         }.start();
     }

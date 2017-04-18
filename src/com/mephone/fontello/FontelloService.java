@@ -40,6 +40,11 @@ public class FontelloService {
      */
     public static final String CMD_PNG_2_SVG = "png_2_svg";
 
+    /**
+     * 切割svg图片
+     */
+    public static final String CMD_CUT_SVG = "cut_svg";
+
     private Map<String, String> mHaiZiMap = new HashMap<String, String>();
 
     private ComputerTable mComputerTable = null;
@@ -94,32 +99,11 @@ public class FontelloService {
             generateConfig(config);
             doFontello();
         } else if (CMD_CUT_PNG.equals(cmd)) {
-            File[] pngs = traversePngDir();
-            if (pngs != null) {
-                for (File file : pngs) {
-                    if (file.getName().endsWith(".png")) {
-                        MyLog.i("file:" + file.getAbsolutePath());
-                        try {
-                            String names = TextUtils.readFile(file
-                                    .getAbsolutePath().replace(".png", ".txt"));
-                            if (TextUtils.isEmpty(names)
-                                    && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
-                                MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
-                            } else {
-                                CutImage.cut2(
-                                        file,
-                                        names,
-                                        SystemConfig.DefalutConfig.sCUT_PNG_COLS,
-                                        SystemConfig.DefalutConfig.sCUT_PNG_ROWS);
-                            }
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
+            cutPng();
         } else if (CMD_PNG_2_SVG.equals(cmd)) {
             png2svg();
+        } else if (CMD_CUT_SVG.equals(cmd)) {
+            cutSvg();
         }
     }
 
@@ -236,7 +220,11 @@ public class FontelloService {
             String uid = UUID.randomUUID().toString();
             glyphsObject.put("uid", uid);
             glyphsObject.put("css", name);
-            glyphsObject.put("code", Integer.parseInt(unicode));
+            try {
+                glyphsObject.put("code", Integer.parseInt(unicode));
+            } catch (Exception e) {
+                glyphsObject.put("code", 10000);
+            }
             glyphsObject.put("src", "custom_icons");
             glyphsObject.put("selected", true);
             glyphsObject.put("svg", svgObject);
@@ -478,5 +466,66 @@ public class FontelloService {
         Cmd.run(cmd1, false);
         Cmd.run(cmd2, false);
         Cmd.run(cmd3, false);
+    }
+
+    /**
+     * 切割png图片
+     */
+    private void cutPng() {
+        File[] pngs = traversePngDir();
+        if (pngs != null) {
+            for (File file : pngs) {
+                if (file.getName().endsWith(".png")) {
+                    MyLog.i("file:" + file.getAbsolutePath());
+                    try {
+                        String names = TextUtils.readFile(file
+                                .getAbsolutePath().replace(".png", ".txt"));
+                        if (TextUtils.isEmpty(names)
+                                && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
+                            MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
+                        } else {
+                            CutImage.cut2(
+                                    file,
+                                    names,
+                                    SystemConfig.DefalutConfig.sCUT_PNG_COLS,
+                                    SystemConfig.DefalutConfig.sCUT_PNG_ROWS);
+                        }
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 切割svg图片
+     */
+    private void cutSvg() {
+        File[] pngs = traversePngDir();
+        if (pngs != null) {
+            for (File file : pngs) {
+                if (file.getName().endsWith(".svg")) {
+                    MyLog.i("file:" + file.getAbsolutePath());
+                    String names = TextUtils.readFile(file
+                            .getAbsolutePath().replace(".svg", ".txt"));
+                    names = TextUtils.replaceBlank(names);
+                    if (TextUtils.isEmpty(names)
+                            && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
+                        MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
+                    } else {
+                        SVGParser.getInstance().cutSvg(file, names,
+                                SystemConfig.DefalutConfig.sCUT_SVG_COLS,
+                                SystemConfig.DefalutConfig.sCUT_SVG_ROWS,
+                                SystemConfig.DefalutConfig.sCUT_SVG_WIDTH,
+                                SystemConfig.DefalutConfig.sCUT_SVG_HEIGHT);
+                    }
+                }
+            }
+        }
+    }
+
+    public static void main(String[] args) {
+        FontelloService.getInstance().doButtonCmd(CMD_CUT_SVG, "");
     }
 }

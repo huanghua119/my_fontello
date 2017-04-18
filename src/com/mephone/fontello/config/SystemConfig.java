@@ -72,6 +72,26 @@ public class SystemConfig {
 
         public static boolean sPNG_NO_NAME = false;
 
+        /**
+         * svg图片列
+         */
+        public static int sCUT_SVG_COLS = 25;
+
+        /**
+         * svg图片行
+         */
+        public static int sCUT_SVG_ROWS = 20;
+
+        /**
+         * 切割svg图片宽
+         */
+        public static int sCUT_SVG_WIDTH = 56;
+
+        /**
+         * 切割svg图片高
+         */
+        public static int sCUT_SVG_HEIGHT = 70;
+
         public static final String ascent = "850";
 
         public static final String unitsPerEm = "1000";
