@@ -84,7 +84,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         Dimension dim = this.getToolkit().getScreenSize();
         this.setBounds((int) (dim.getWidth() - M_WIDTH) / 2,
                 (int) (dim.getHeight() - M_WIDTH) / 2, M_WIDTH, M_HEIGHT);
-        this.setTitle("义启字库生成器 ");
+        this.setTitle("义启字库生成器");
         this.setResizable(false);
         // 禁用窗体的装饰
         // this.setUndecorated(true);

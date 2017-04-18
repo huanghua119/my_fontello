@@ -2,6 +2,7 @@ package com.mephone.fontello;
 
 import java.io.File;
 import java.io.FileFilter;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -68,7 +69,7 @@ public class FontelloService {
             String value = line.substring(0, 1).trim();
             String key = line.substring(1, line.length()).trim();
             mHaiZiMap.put(key, value);
-            MyLog.i(key + " " + value);
+            //MyLog.i(key + " " + value);
         }
         isActivation = isEffectiveComputer();
     }
@@ -103,7 +104,7 @@ public class FontelloService {
                                     .getAbsolutePath().replace(".png", ".txt"));
                             if (TextUtils.isEmpty(names)
                                     && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
-                                MyLog.w("字样图片对应的文本文件没找到");
+                                MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
                             } else {
                                 CutImage.cut2(
                                         file,
@@ -160,6 +161,10 @@ public class FontelloService {
             String css = JsonUtils.getJSONString(glyphJson, "css");
             JSONObject svgJson = JsonUtils.getJSONObject(glyphJson, "svg");
             String path = JsonUtils.getJSONString(svgJson, "path");
+            float width = units_per_em * JsonUtils.getJSONInt(svgJson, "width")
+                    / 1000;
+            BigDecimal bd = new BigDecimal(width);
+            width = bd.setScale(1, BigDecimal.ROUND_FLOOR).floatValue();
 
             float scale = units_per_em / 1000f;
             int newTx = 0;
@@ -170,7 +175,7 @@ public class FontelloService {
                     + "", newSy + "", 2);
 
             String g = "<glyph glyph-name=\"" + css + "\" unicode=\"&#x" + code
-                    + ";\" d=\"" + newPath + "\" horiz-adv-x=\"" + units_per_em
+                    + ";\" d=\"" + newPath + "\" horiz-adv-x=\"" + width
                     + "\" />";
             glyph.append(g);
         }
@@ -217,10 +222,17 @@ public class FontelloService {
             String name = svg.getName();
             String unicode = svg.getUnicode();
 
+            String viewBox = svg.getViewBox();
+            String[] boxs = viewBox.split(" ");
+
+            int width = (int) Math
+                    .round(1000 * (Float.parseFloat(boxs[2]) / Float
+                            .parseFloat(boxs[3])));
+
             String newPath = getSvgPath(svg);
             JSONObject svgObject = new JSONObject();
             svgObject.put("path", newPath);
-            svgObject.put("width", 1000);
+            svgObject.put("width", width);
             String uid = UUID.randomUUID().toString();
             glyphsObject.put("uid", uid);
             glyphsObject.put("css", name);
@@ -316,7 +328,10 @@ public class FontelloService {
 
         float newTx = translateX / scaleX;
         float newTy = translateY / scaleY;
-        float newSx = 1000 / (width / scaleX);
+
+        float x = width / height;
+
+        float newSx = 1000 * x / (width / scaleX);
         float newSy = 1000 / (height / scaleY);
         // translate ( translateX / scaleX, translateY / scaleY)
         // scale( 1000 /( width / scaleX) , 1000 / ( height / scaleY))
@@ -371,6 +386,7 @@ public class FontelloService {
                         fs.setUnicode(TextUtils.string2Unicode(name));
                     } else {
                         fs.setUnicode(TextUtils.string2Unicode(fs.getName()));
+                        //fs.setUnicode(fs.getName());
                     }
                     result.add(fs);
                 }
