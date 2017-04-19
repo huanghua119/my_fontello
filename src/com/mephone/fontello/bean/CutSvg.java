@@ -16,6 +16,8 @@ public class CutSvg {
 
     private int height;
 
+    private boolean isSinglePath;
+
     public List<String> getPathList() {
         return pathList;
     }
@@ -64,4 +66,11 @@ public class CutSvg {
         this.height = height;
     }
 
+    public boolean isSinglePath() {
+        return isSinglePath;
+    }
+
+    public void setSinglePath(boolean isSinglePath) {
+        this.isSinglePath = isSinglePath;
+    }
 }

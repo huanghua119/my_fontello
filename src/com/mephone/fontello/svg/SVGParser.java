@@ -258,35 +258,28 @@ public class SVGParser {
             if (pathList == null || pathList.getLength() == 0) {
                 return;
             }
-            for (int i = 0; i < pathList.getLength(); i++) {
-                Node d = pathList.item(i);
+            int lenght = pathList.getLength();
+            if (lenght == 1) {
+                Node d = pathList.item(0);
                 org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
                 String data = svgPath.getAttribute("d");
-                // 计算path起始坐标位置
-                int index = CommonUtils
-                        .calcMin(data.indexOf("h"), data.indexOf("H"),
-                                data.indexOf("v"), data.indexOf("V"),
-                                data.indexOf("l"), data.indexOf("L"),
-                                data.indexOf("c"), data.indexOf("C"));
-                String point = data.substring(1, index);
-                String[] points = point.split(",");
-                int c = (int) Double.parseDouble(points[0]) / width;
-                int r = (int) Double.parseDouble(points[1]) / height;
-                CutSvg svg = cutSvgArray[c][r];
-                List<String> dataList = svg.getPathList();
-                if (dataList == null) {
-                    dataList = new ArrayList<String>();
-                    svg.setPathList(dataList);
+                String[] allData = data.split("M");
+                for (String path : allData) {
+                    if (!TextUtils.isEmpty(path)) {
+                        path = "M" + path;
+                        CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
+                                rows, width, height);
+                        svg.setSinglePath(true);
+                    }
                 }
-                dataList.add(data);
-                if (!TextUtils.isEmpty(names)) {
-                    // 计算path对应的汉字
-                    int nameIndex = r * cols + c;
-                    String name = names.substring(nameIndex, nameIndex + 1);
-                    svg.setName(name);
-                } else {
-                    String name = "map_" + r + "_" + c;
-                    svg.setName(name);
+            } else {
+                for (int i = 0; i < pathList.getLength(); i++) {
+                    Node d = pathList.item(i);
+                    org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
+                    String data = svgPath.getAttribute("d");
+                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
+                            rows, width, height);
+                    svg.setSinglePath(false);
                 }
             }
             MyLog.i("cutSvg end");
@@ -305,6 +298,35 @@ public class SVGParser {
                 generateCutSvg(svg, outDir.getAbsolutePath());
             }
         }
+    }
+
+    private CutSvg caclCutSvg(CutSvg[][] cutSvgArray, String data,
+            String names, int cols, int rows, int width, int height) {
+        // 计算path起始坐标位置
+        int index = CommonUtils.calcMin(data.indexOf("h"), data.indexOf("H"),
+                data.indexOf("v"), data.indexOf("V"), data.indexOf("l"),
+                data.indexOf("L"), data.indexOf("c"), data.indexOf("C"));
+        String point = data.substring(1, index);
+        String[] points = point.split(",");
+        int c = (int) Double.parseDouble(points[0]) / width;
+        int r = (int) Double.parseDouble(points[1]) / height;
+        CutSvg svg = cutSvgArray[c][r];
+        List<String> dataList = svg.getPathList();
+        if (dataList == null) {
+            dataList = new ArrayList<String>();
+            svg.setPathList(dataList);
+        }
+        dataList.add(data);
+        if (!TextUtils.isEmpty(names)) {
+            // 计算path对应的汉字
+            int nameIndex = r * cols + c;
+            String name = names.substring(nameIndex, nameIndex + 1);
+            svg.setName(name);
+        } else {
+            String name = "map_" + r + "_" + c;
+            svg.setName(name);
+        }
+        return svg;
     }
 
     /**
@@ -331,8 +353,16 @@ public class SVGParser {
         String gTag = "<g transform=\"translate(-" + transX + ",-" + transY
                 + ")\" >";
         String pathTag = "";
-        for (String path : svg.getPathList()) {
-            pathTag += "<path d=\"" + path + "\"/>";
+        if (svg.isSinglePath()) {
+            pathTag = "<path d=\"";
+            for (String path : svg.getPathList()) {
+                pathTag += path;
+            }
+            pathTag = pathTag + "\"/>";
+        } else {
+            for (String path : svg.getPathList()) {
+                pathTag += "<path d=\"" + path + "\"/>";
+            }
         }
         String end = "</g></svg>";
 
