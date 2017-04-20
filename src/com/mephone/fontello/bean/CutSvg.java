@@ -8,6 +8,8 @@ public class CutSvg {
 
     private String name;
 
+    private String unicode;
+
     private int cols;
 
     private int rows;
@@ -72,5 +74,13 @@ public class CutSvg {
 
     public void setSinglePath(boolean isSinglePath) {
         this.isSinglePath = isSinglePath;
+    }
+
+    public String getUnicode() {
+        return unicode;
+    }
+
+    public void setUnicode(String unicode) {
+        this.unicode = unicode;
     }
 }

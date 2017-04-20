@@ -70,7 +70,7 @@ public class SystemConfig {
 
         public static int PNG_BLACK_SIDE_OFFICE = 0;
 
-        public static boolean sPNG_NO_NAME = false;
+        public static boolean sPNG_NO_NAME = true;
 
         /**
          * svg图片列

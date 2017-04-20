@@ -97,7 +97,7 @@ public class SVGParser {
             svg.setPathD(dataD.toString());
             MyLog.i("parserJoinSvg end");
         } catch (Exception e) {
-            MyLog.w("解析svg失败...");
+            MyLog.w("解析svg失败...path:" + path);
             MyLog.w(e.toString());
             e.printStackTrace();
         }
@@ -322,6 +322,7 @@ public class SVGParser {
             int nameIndex = r * cols + c;
             String name = names.substring(nameIndex, nameIndex + 1);
             svg.setName(name);
+            svg.setUnicode(TextUtils.string2Unicode(name));
         } else {
             String name = "map_" + r + "_" + c;
             svg.setName(name);
@@ -369,7 +370,12 @@ public class SVGParser {
         String svgText = head + svgTag + gTag + pathTag + end;
         svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
 
-        String outPath = newPath + "/" + svg.getName() + ".svg";
+        String name = svg.getName();
+        if (!TextUtils.isHaizi(name)) {
+            name = svg.getUnicode();
+        }
+
+        String outPath = newPath + "/" + name + ".svg";
         MyLog.i("generateCutSvg outPath:" + outPath);
         TextUtils.saveFileText(svgText, outPath);
     }

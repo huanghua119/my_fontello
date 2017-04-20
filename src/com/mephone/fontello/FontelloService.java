@@ -373,8 +373,11 @@ public class FontelloService {
                         fs.setName(name);
                         fs.setUnicode(TextUtils.string2Unicode(name));
                     } else {
-                        fs.setUnicode(TextUtils.string2Unicode(fs.getName()));
-                        //fs.setUnicode(fs.getName());
+                        if (fs.getName().length() == 1) {
+                            fs.setUnicode(TextUtils.string2Unicode(fs.getName()));
+                        } else {
+                            fs.setUnicode(fs.getName());
+                        }
                     }
                     result.add(fs);
                 }
