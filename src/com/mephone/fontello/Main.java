@@ -18,11 +18,12 @@ public class Main {
         JFrame.setDefaultLookAndFeelDecorated(true);
         // JDialog.setDefaultLookAndFeelDecorated(true);
         try {
-            UIManager
-                    .setLookAndFeel(new SubstanceBusinessBlueSteelLookAndFeel());
-            SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
-            SubstanceLookAndFeel.setCurrentTitlePainter(new FlatTitlePainter());
-        } catch (UnsupportedLookAndFeelException e) {
+//            UIManager
+//                    .setLookAndFeel(new SubstanceBusinessBlueSteelLookAndFeel());
+//            SubstanceLookAndFeel.setSkin(new BusinessBlackSteelSkin());
+//            SubstanceLookAndFeel.setCurrentTitlePainter(new FlatTitlePainter());
+            UIManager.setLookAndFeel("com.sun.java.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (Exception e) {
             e.printStackTrace();
         }
         SwingUtilities.invokeLater(new Runnable() {

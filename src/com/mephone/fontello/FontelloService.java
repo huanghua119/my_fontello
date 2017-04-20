@@ -417,9 +417,27 @@ public class FontelloService {
      * @return 返回子文件
      */
     public File[] traversePngDir() {
-        File file = new File(SystemConfig.FileSystem.PNG_DIR);
+        return traverseDir(SystemConfig.FileSystem.PNG_DIR, "");
+    }
+
+    /**
+     * 遍历目录
+     * @param path
+     * @return
+     */
+    public File[] traverseDir(String path, final String end) {
+        File file = new File(path);
         if (file.exists() && file.isDirectory()) {
-            return file.listFiles();
+            return file.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    if (TextUtils.isEmpty(end)) {
+                        return pathname.isFile();
+                    }
+                    return pathname.isFile()
+                            && pathname.getName().endsWith(end);
+                }
+            });
         }
         return null;
     }

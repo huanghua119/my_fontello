@@ -29,6 +29,11 @@ public class SystemConfig {
         public static final String FILE_6763 = ROOT_DIR + "6763.txt";
 
         /**
+         * 设置文件目录
+         */
+        public static final String SETTING_DIR = "settings/";
+
+        /**
          * 最终生成的svg文件
          */
         public static final String FONTELLO_SVG = ROOT_DIR + "fontello.svg";

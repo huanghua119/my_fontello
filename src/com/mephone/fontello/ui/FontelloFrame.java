@@ -9,10 +9,16 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Properties;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -24,8 +30,10 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import com.mephone.fontello.FontelloService;
+import com.mephone.fontello.bean.FontSettingProp;
 import com.mephone.fontello.bean.SvgConfig;
 import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
@@ -47,6 +55,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private JButton mFontelloButton;
     private JButton mSelectButton;
     private JTextArea mFontelloTextArea;
+    private JComboBox<FontSettingProp> mNameComboBox;
 
     private JTextField mUnitesText;
     private JTextField mAscentText;
@@ -99,6 +108,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
 
         loadData();
+        loadSettings();
         showNoActiveDialog();
     }
 
@@ -237,12 +247,18 @@ public class FontelloFrame extends JFrame implements ActionListener {
         jpanelOne.add(mAscentText);
         jpanelOne.add(Box.createHorizontalStrut(20));
 
+        mNameComboBox = new JComboBox<FontSettingProp>();
+        mNameComboBox.addItem(new FontSettingProp("自定义"));
+        mNameComboBox.addActionListener(this);
+
         JPanel jpanelTwo = new JPanel();
         jpanelTwo.setLayout(new BoxLayout(jpanelTwo, BoxLayout.X_AXIS));
         mNorthPanel.add(jpanelTwo);
         mNorthPanel.add(Box.createVerticalStrut(5));
         jpanelTwo.add(Box.createHorizontalStrut(20));
-        jpanelTwo.add(new JLabel("font_name:"));
+        jpanelTwo.add(new JLabel("字体名称:"));
+        jpanelTwo.add(Box.createHorizontalStrut(10));
+        jpanelTwo.add(mNameComboBox);
         jpanelTwo.add(Box.createHorizontalStrut(10));
         jpanelTwo.add(mFontNameText);
         jpanelTwo.add(Box.createHorizontalStrut(20));
@@ -296,6 +312,19 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
         mCutColsText.setText(SystemConfig.DefalutConfig.sCUT_PNG_COLS + "");
         mCutRowsText.setText(SystemConfig.DefalutConfig.sCUT_PNG_ROWS + "");
+        mCutWidthText.setText("");
+        mCutHeightText.setText("");
+    }
+
+    private void loadSettings() {
+        File[] settingFile = mService.traverseDir(
+                SystemConfig.FileSystem.SETTING_DIR, ".properties");
+        for (File setting : settingFile) {
+            FontSettingProp prop = new FontSettingProp();
+            prop.setName(setting.getName().replace(".properties", ""));
+            prop.setPropFile(setting);
+            mNameComboBox.addItem(prop);
+        }
     }
 
     @Override
@@ -316,18 +345,50 @@ public class FontelloFrame extends JFrame implements ActionListener {
             getContentPane().remove(mFontelloLayout);
             getContentPane().add(mPng2SvgLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mPng2SvgTextArea);
-            mPng2SvgLayout.updateUI();
+            updateUI(mPng2SvgLayout);
         } else if (e.getSource() == mFontelloItem) {
             getContentPane().remove(mPng2SvgLayout);
             getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mFontelloTextArea);
-            mFontelloLayout.updateUI();
+            updateUI(mFontelloLayout);
         } else if (e.getSource() == mCutPngButton) {
             startCutPng();
         } else if (e.getSource() == mPng2SvgButton) {
             startPng2Svg();
         } else if (e.getSource() == mCutSvgButton) {
             startCutSvg();
+        } else if (e.getSource() == mNameComboBox) {
+            int index = mNameComboBox.getSelectedIndex();
+            if (index == 0) {
+                mFontNameText.setText("iekie");
+                mFontNameText.setEditable(true);
+                loadData();
+            } else {
+                mFontNameText.setEditable(false);
+                FontSettingProp prop = (FontSettingProp) mNameComboBox
+                        .getSelectedItem();
+                mFontNameText.setText(prop.toString());
+                Properties pps = new Properties();
+                try {
+                    pps.load(new FileInputStream(prop.getPropFile()));
+                    String em = pps.getProperty("em");
+                    String ascent = pps.getProperty("ascent");
+                    String cols = pps.getProperty("cols");
+                    String rows = pps.getProperty("rows");
+                    String width = pps.getProperty("width");
+                    String height = pps.getProperty("height");
+                    mUnitesText.setText(em);
+                    mAscentText.setText(ascent);
+                    mCutColsText.setText(cols);
+                    mCutRowsText.setText(rows);
+                    mCutWidthText.setText(width);
+                    mCutHeightText.setText(height);
+                } catch (FileNotFoundException e1) {
+                    e1.printStackTrace();
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
         }
     }
 
@@ -598,6 +659,18 @@ public class FontelloFrame extends JFrame implements ActionListener {
             JOptionPane.showMessageDialog(this, "请提供电脑的 MAC地址给相关人员\n MAC:"
                     + mac, "你的电脑未激活!", JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+        }
+    }
+
+    private void updateUI(final JComponent compnent) {
+        if (SwingUtilities.isEventDispatchThread()) {
+            compnent.updateUI();
+        } else {
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    compnent.updateUI();
+                }
+            });
         }
     }
 }
