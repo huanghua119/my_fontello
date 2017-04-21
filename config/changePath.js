@@ -7,7 +7,7 @@ var fs = require('fs');
 var args = process.argv.splice(2);
 
 if (args.length == 1) {
-    var filepath = args[0];
+    var filepath = args[0].replace(/"/g,"");
     var data = fs.readFileSync(filepath);
     var index = data.indexOf('\n');
     if (index > -1) {
