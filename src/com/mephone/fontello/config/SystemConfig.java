@@ -34,6 +34,11 @@ public class SystemConfig {
         public static final String SETTING_DIR = "settings/";
 
         /**
+         * path数据临时目录
+         */
+        public static final String TEMP_PATH = ROOT_DIR + "temp.path";
+
+        /**
          * 最终生成的svg文件
          */
         public static final String FONTELLO_SVG = ROOT_DIR + "fontello.svg";
@@ -97,9 +102,9 @@ public class SystemConfig {
          */
         public static int sCUT_SVG_HEIGHT = 70;
 
-        public static final String ascent = "850";
+        public static final String ascent = "221";
 
-        public static final String unitsPerEm = "1000";
+        public static final String unitsPerEm = "281";
 
         public static final String fontName = "iekie";
 

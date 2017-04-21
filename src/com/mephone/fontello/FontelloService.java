@@ -341,9 +341,16 @@ public class FontelloService {
     private String changePath(String path, String translateX,
             String translateY, String scaleX, String scaleY, int type) {
         path = path.replace(" ", "_");
-        String cmd = "svgpath \"" + path + "\" " + translateX + " "
-                + translateY + " " + scaleX + " " + scaleY + " " + type;
-        return Cmd.run(cmd, false);
+
+        String content = path + "\n" + translateX + " " + translateY + " "
+                + scaleX + " " + scaleY + " " + type;
+
+        File tempPath = new File(SystemConfig.FileSystem.TEMP_PATH);
+        TextUtils.saveFileText(content, tempPath.getAbsolutePath());
+        String cmd = "svgpath \"" + tempPath.getAbsolutePath() + "\"";
+        String result = Cmd.run(cmd, false);
+        tempPath.delete();
+        return result;
     }
 
     /**

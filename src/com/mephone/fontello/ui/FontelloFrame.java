@@ -292,6 +292,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
         mFileChooser = new JFileChooser();
         mFileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        mFileChooser.setCurrentDirectory(new File(SystemConfig.FileSystem.ROOT_DIR));
         mFileChooser.setDialogTitle("请选择包含svg图片的目录!");
     }
 

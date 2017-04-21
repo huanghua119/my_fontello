@@ -326,6 +326,7 @@ public class SVGParser {
         } else {
             String name = "map_" + r + "_" + c;
             svg.setName(name);
+            svg.setUnicode(name);
         }
         return svg;
     }

@@ -2,11 +2,34 @@
 "use strict";
 
 var svgpath = require('./lib/svgpath');
+var fs = require('fs');
 
 var args = process.argv.splice(2);
 
-if (args.length != 6) {
-    console.log("----参数错误 e:svgpath path translateX translateY scaleX scaleY type");
+if (args.length == 1) {
+    var filepath = args[0];
+    var data = fs.readFileSync(filepath);
+    var index = data.indexOf('\n');
+    if (index > -1) {
+        var path = data.toString().substring(0, index);
+        var para = data.toString().substring(index + 1, data.length);
+        var paras = para.split(' ');
+        if (paras.length != 5) {
+            console.log("文件内容格式错误!");
+            return;
+        }
+        args[0] = path;
+        args[1] = paras[0];
+        args[2] = paras[1];
+        args[3] = paras[2];
+        args[4] = paras[3];
+        args[5] = paras[4];
+    } else {
+        console.log("文件内容格式错误!");
+        return;
+    }
+} else if (args.length != 6) {
+    console.log("----参数错误 e:svgpath path translateX translateY scaleX scaleY type 或 svgpath filePath");
     //console.log(args);
     return;
 }
