@@ -50,6 +50,21 @@ public class SystemConfig {
 
         public static final String CACHE_PATH = SystemConfig.FileSystem.ROOT_DIR
                 + ".cache/";
+
+        /**
+         * 检测TTF主目录
+         */
+        public static final String CHECK_PATH = ROOT_DIR + "check/";
+
+        /**
+         * 检测TTF 字符目录
+         */
+        public static final String CHECK_TXT = CHECK_PATH + "txt/";
+
+        /**
+         * 检测TTF 字库目录
+         */
+        public static final String CHECK_TTF = CHECK_PATH + "ttf/";
     }
 
     public static class DefalutConfig {

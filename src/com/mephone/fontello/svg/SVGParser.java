@@ -284,7 +284,7 @@ public class SVGParser {
             }
             MyLog.i("cutSvg end");
         } catch (Exception e) {
-            MyLog.w("解析svg失败...");
+            MyLog.w("解析svg失败 ...file:" + svgFile.getAbsolutePath());
             MyLog.w(e.toString());
             e.printStackTrace();
         }

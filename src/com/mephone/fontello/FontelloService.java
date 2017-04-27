@@ -442,7 +442,7 @@ public class FontelloService {
                         return pathname.isFile();
                     }
                     return pathname.isFile()
-                            && pathname.getName().endsWith(end);
+                            && pathname.getName().toLowerCase().endsWith(end);
                 }
             });
         }
