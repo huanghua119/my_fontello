@@ -65,6 +65,16 @@ public class SystemConfig {
          * 检测TTF 字库目录
          */
         public static final String CHECK_TTF = CHECK_PATH + "ttf/";
+
+        /**
+         * 提取字符主目录
+         */
+        public static final String DRAW_PATH = ROOT_DIR + "draw/";
+
+        /**
+         * 提取TTF 字库目录
+         */
+        public static final String DRAW_TTF = DRAW_PATH + "ttf/";
     }
 
     public static class DefalutConfig {

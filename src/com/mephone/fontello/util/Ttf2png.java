@@ -40,8 +40,13 @@ public class Ttf2png {
     }
 
     public static boolean checkChar(File fontFile, String text) {
-        ImageIcon imgIcon = new ImageIcon(SystemConfig.FileSystem.SETTING_DIR
-                + "temp.png");
+        ImageIcon imgIcon = null;
+        try {
+            imgIcon = new ImageIcon(IOUtils.input2byte(Ttf2png.class
+                    .getResourceAsStream("/com/mephone/fontello/temp.png")));
+        } catch (IOException e1) {
+            return false;
+        }
         Image img = imgIcon.getImage();
         int width = img.getWidth(null);
         int height = img.getHeight(null);
@@ -99,7 +104,20 @@ public class Ttf2png {
 
     public static boolean drawTextInImg(String outFile, String text,
             String color, float textSize, File wmFont) {
-        ImageIcon imgIcon = new ImageIcon("data/temp.png");
+        ImageIcon imgIcon = null;
+
+        if (TextUtils.fileExists(SystemConfig.FileSystem.SETTING_DIR
+                + "temp.png")) {
+            imgIcon = new ImageIcon(SystemConfig.FileSystem.SETTING_DIR
+                    + "temp.png");
+        } else {
+            try {
+                imgIcon = new ImageIcon(IOUtils.input2byte(Ttf2png.class
+                        .getResourceAsStream("/com/mephone/fontello/temp.png")));
+            } catch (IOException e1) {
+                return false;
+            }
+        }
         Image img = imgIcon.getImage();
         int width = img.getWidth(null);
         int height = img.getHeight(null);
@@ -223,14 +241,17 @@ public class Ttf2png {
         int offsetX = maxW - newW + ((newW - (maxW - mixW)) / 2);
         // System.out.println("mixH:" + mixH + " maxH:" + maxH + " offsetX:"
         // + offsetX + " offsetY:" + offsetY);
-        if ((offsetY + 200) > bi.getHeight() || (offsetX + 200) > bi.getWidth()) {
+        if ((offsetY + textSize) > bi.getHeight() || (offsetX + textSize) > bi.getWidth()) {
             return 2;
         }
-        BufferedImage image = bi.getSubimage(offsetX, offsetY, 200, 200);
+        BufferedImage image = bi.getSubimage(offsetX, offsetY, textSize, textSize);
         if (TextUtils.isEmpty(outFile)) {
             return 4;
         }
         File f = new File(outFile);
+        if (!f.getParentFile().exists()) {
+            f.getParentFile().mkdirs();
+        }
         boolean ok = ImageIO.write(image, "PNG", f);
         image.flush();
         bi.flush();

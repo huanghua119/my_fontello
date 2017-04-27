@@ -59,23 +59,6 @@ public class FontelloService {
     }
 
     private void init() {
-        mHaiZiMap.clear();
-        String text = TextUtils.readFile(SystemConfig.FileSystem.FILE_6763);
-        if (TextUtils.isEmpty(text)) {
-            text = TextUtils.readFile(FontelloService.class
-                    .getResourceAsStream("/com/mephone/fontello/6763.txt"));
-        }
-        String[] lines = text.split("\n");
-        for (String line : lines) {
-            line = line.trim();
-            if (TextUtils.isEmpty(line)) {
-                continue;
-            }
-            String value = line.substring(0, 1).trim();
-            String key = line.substring(1, line.length()).trim();
-            mHaiZiMap.put(key, value);
-            //MyLog.i(key + " " + value);
-        }
         isActivation = isEffectiveComputer();
     }
 
@@ -353,6 +336,29 @@ public class FontelloService {
         return result;
     }
 
+    private void readHaiZiMap() {
+        if (mHaiZiMap == null) {
+            mHaiZiMap = new HashMap<String, String>();
+        }
+        mHaiZiMap.clear();
+        String text = TextUtils.readFile(SystemConfig.FileSystem.FILE_6763);
+        if (TextUtils.isEmpty(text)) {
+            text = TextUtils.readFile(FontelloService.class
+                    .getResourceAsStream("/com/mephone/fontello/6763.txt"));
+        }
+        String[] lines = text.split("\n");
+        for (String line : lines) {
+            line = line.trim();
+            if (TextUtils.isEmpty(line)) {
+                continue;
+            }
+            String value = line.substring(0, 1).trim();
+            String key = line.substring(1, line.length()).trim();
+            mHaiZiMap.put(key, value);
+            //MyLog.i(key + " " + value);
+        }
+    }
+
     /**
      * 读取指定目录下载的svg图片
      * 
@@ -360,6 +366,9 @@ public class FontelloService {
      * @return
      */
     private List<FontSvg> readSvgFile(String svgPath) {
+        if (mHaiZiMap == null || mHaiZiMap.size() == 0) {
+            readHaiZiMap();
+        }
         List<FontSvg> result = new ArrayList<FontSvg>();
         File file = new File(svgPath);
         if (file.exists() && file.isDirectory()) {
@@ -551,6 +560,40 @@ public class FontelloService {
                 }
             }
         }
+    }
+
+    /**
+     * 递归遍历目录下所有指定后缀的文件
+     * @param path
+     * @param end
+     * @return
+     */
+    public List<File> getFiles(String path, String... end){
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
+        List<File> result = new ArrayList<>();
+        File[] files = file.listFiles();
+        for (File f : files) {
+            if (f.isFile()) {
+                int index = f.getName().lastIndexOf(".");
+                if (end != null) {
+                    for (String e : end) {
+                        if (f.getName().substring(index).toLowerCase().equals(e)) {
+                            result.add(f);
+                            break;
+                        }
+                    }
+                }
+            } else {
+                List<File> lists = getFiles(f.getAbsolutePath(), end);
+                if (lists != null && lists.size() >0) {
+                    result.addAll(lists);
+                }
+            }
+        }
+        return result;
     }
 
     public static void main(String[] args) {

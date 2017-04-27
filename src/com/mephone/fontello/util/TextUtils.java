@@ -303,7 +303,7 @@ public class TextUtils {
         return charset;
     }
 
-    private static String getEncode(int flag1, int flag2, int flag3) {
+    public static String getEncode(int flag1, int flag2, int flag3) {
         String encode = "";
         // txt文件的开头会多出几个字节，分别是FF、FE（Unicode）,
         // FE、FF（Unicode big endian）,EF、BB、BF（UTF-8）
@@ -336,4 +336,20 @@ public class TextUtils {
         return flg;
     }
 
+    /**
+     * 获取文件名字
+     * @param file
+     * @return
+     */
+    public static String getFileName(File file) {
+        if (file != null && file.exists()) {
+            int index = file.getName().lastIndexOf(".");
+            return file.getName().substring(0, index);
+        }
+        return "";
+    }
+
+    public static boolean fileExists(String path) {
+        return new File(path).exists();
+    }
 }
