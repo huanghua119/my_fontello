@@ -13,6 +13,18 @@ import com.mephone.fontello.config.MyLog;
 import com.mephone.fontello.config.SystemConfig;
 
 public class CutImage {
+    public static void main(String[] args) {
+        File file = new File(SystemConfig.FileSystem.PNG_DIR + "jz_jiuzheng3.jpg");
+        try {
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH = 10;
+            SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT = 10;
+            SystemConfig.DefalutConfig.sPNG_WIDTH = 160;
+            SystemConfig.DefalutConfig.sPNG_HEIGHT = 160;
+            cut2(file, "", 12, 16);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static ImageDto cut2(File sourceFile, String fileNames, int cols,
             int rows) throws IOException {
@@ -50,12 +62,14 @@ public class CutImage {
                     cHeight = getHeight(i, rows, eHeight, height);
                 }
 
-                int startX = j * (cWidth + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH);
-                int startY = i * (cHeight + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT);
+                int startX = j
+                        * (cWidth) + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH;
+                int startY = i
+                        * (cHeight) + SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT;
 
                 int office = SystemConfig.DefalutConfig.PNG_BLACK_SIDE_OFFICE;
-                int endX = cWidth;
-                int endY = cHeight;
+                int endX = cWidth - SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_WIDTH * 2;
+                int endY = cHeight - SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT * 2;
 
                 if ((startX + endX) > sWidth) {
                     office = startX + endX - sWidth;
@@ -63,7 +77,8 @@ public class CutImage {
                 // x坐标,y坐标,宽度,高度
                 image = source.getSubimage(startX, startY, endX - office, endY);
 
-                if (TextUtils.isEmpty(fileNames) && SystemConfig.DefalutConfig.sPNG_NO_NAME) {
+                if (TextUtils.isEmpty(fileNames)
+                        && SystemConfig.DefalutConfig.sPNG_NO_NAME) {
                     fileName = targetDir + "/map_" + i + "_" + j + ".png";
                     MyLog.i("save fileName:" + fileName);
                 } else {
@@ -75,9 +90,11 @@ public class CutImage {
                     fileName = targetDir + "/" + name + ".png";
                     MyLog.i("save unicode:" + name + " fileName:" + fileName);
                 }
-                file = new File(fileName);
-                ImageIO.write(image, "PNG", file);
-                list.add(file);
+                if (i % 2 != 0) {
+                    file = new File(fileName);
+                    ImageIO.write(image, "PNG", file);
+                    list.add(file);
+                }
             }
         }
         return new ImageDto(sWidth, sHeight, list);

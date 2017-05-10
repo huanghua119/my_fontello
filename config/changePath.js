@@ -61,7 +61,7 @@ if (type == 1) {
     .scale(scaleX1, scaleY1)
     .translate(translateX1, translateY1)
     .abs()
-    .round(0)
+    .round(1)
     .rel()
     .toString();
 }

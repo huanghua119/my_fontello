@@ -372,6 +372,9 @@ public class SVGParser {
         svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
 
         String name = svg.getName();
+        if (TextUtils.isEmpty(name) && TextUtils.isEmpty(svg.getUnicode())) {
+            return;
+        }
         if (!TextUtils.isHaizi(name)) {
             name = svg.getUnicode();
         }
