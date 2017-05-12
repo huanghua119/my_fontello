@@ -518,6 +518,13 @@ public class FontelloService {
                         String names = TextUtils.readFile(file
                                 .getAbsolutePath().replace(".png", ".txt"));
                         if (TextUtils.isEmpty(names)
+                                && SystemConfig.DefalutConfig.sGB2312_NAME) {
+                            names = TextUtils
+                                    .readFile(FontelloService.class
+                                            .getResourceAsStream("/com/mephone/fontello/GB2312完整字库.txt"));
+                            names = TextUtils.replaceBlank(names);
+                        }
+                        if (TextUtils.isEmpty(names)
                                 && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
                             MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
                         } else {
@@ -547,6 +554,13 @@ public class FontelloService {
                     String names = TextUtils.readFile(file
                             .getAbsolutePath().replace(".svg", ".txt"));
                     names = TextUtils.replaceBlank(names);
+                    if (TextUtils.isEmpty(names)
+                            && SystemConfig.DefalutConfig.sGB2312_NAME) {
+                        names = TextUtils
+                                .readFile(FontelloService.class
+                                        .getResourceAsStream("/com/mephone/fontello/GB2312完整字库.txt"));
+                        names = TextUtils.replaceBlank(names);
+                    }
                     if (TextUtils.isEmpty(names)
                             && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
                         MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
@@ -596,7 +610,4 @@ public class FontelloService {
         return result;
     }
 
-    public static void main(String[] args) {
-        FontelloService.getInstance().doButtonCmd(CMD_CUT_SVG, "");
-    }
 }

@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
@@ -235,13 +236,13 @@ public class TextUtils {
         return data;
     }
 
-    public static String getFileEncode(String path) {
+    public static String getFileEncode(InputStream is) {
         String charset = "asci";
         byte[] first3Bytes = new byte[3];
         BufferedInputStream bis = null;
         try {
             boolean checked = false;
-            bis = new BufferedInputStream(new FileInputStream(path));
+            bis = new BufferedInputStream(is);
             bis.mark(0);
             int read = bis.read(first3Bytes, 0, 3);
             if (read == -1)
@@ -301,6 +302,15 @@ public class TextUtils {
             }
         }
         return charset;
+    }
+
+    public static String getFileEncode(String path) {
+        try {
+            return getFileEncode(new FileInputStream(path));
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return "";
     }
 
     public static String getEncode(int flag1, int flag2, int flag3) {

@@ -108,6 +108,11 @@ public class SystemConfig {
         public static boolean sPNG_NO_NAME = true;
 
         /**
+         * 是否是GB2312完整字库
+         */
+        public static boolean sGB2312_NAME = false;
+
+        /**
          * svg图片列
          */
         public static int sCUT_SVG_COLS = 25;

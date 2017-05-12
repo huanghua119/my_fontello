@@ -277,9 +277,20 @@ public class SVGParser {
                     Node d = pathList.item(i);
                     org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
                     String data = svgPath.getAttribute("d");
-                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
-                            rows, width, height);
-                    svg.setSinglePath(false);
+
+                    String[] allData = data.split("M");
+                    for (String path : allData) {
+                        if (!TextUtils.isEmpty(path)) {
+                            path = "M" + path;
+                            CutSvg svg = caclCutSvg(cutSvgArray, path, names,
+                                    cols, rows, width, height);
+                            svg.setSinglePath(true);
+                        }
+                    }
+
+//                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
+//                            rows, width, height);
+//                    svg.setSinglePath(false);
                 }
             }
             MyLog.i("cutSvg end");
@@ -295,6 +306,13 @@ public class SVGParser {
         for (int i = 0; i < cols; i++) {
             for (int j = 0; j < rows; j++) {
                 CutSvg svg = cutSvgArray[i][j];
+                if (svg.getPathList() == null || svg.getPathList().size() == 0) {
+                    int nameIndex = j * rows + i;
+                    if (nameIndex < names.length()) {
+                        String name = names.substring(nameIndex, nameIndex + 1);
+                        MyLog.w("缺少  " + name + " 字的svg数据");
+                    }
+                }
                 generateCutSvg(svg, outDir.getAbsolutePath());
             }
         }

@@ -384,6 +384,14 @@ public class FontelloFrame extends JFrame implements ActionListener {
                     mCutRowsText.setText(rows);
                     mCutWidthText.setText(width);
                     mCutHeightText.setText(height);
+
+                    if (pps.containsKey("gb2312")) {
+                        SystemConfig.DefalutConfig.sGB2312_NAME = Boolean
+                                .parseBoolean(pps.getProperty("gb2312"));
+                    } else {
+                        SystemConfig.DefalutConfig.sGB2312_NAME = false;
+                    }
+
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
                 } catch (IOException e1) {
@@ -414,6 +422,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         } else {
             MyLog.w("字库生成失败，请重试!");
         }
+        FontelloFrame.this.toFront();
         mFontelloButton.setEnabled(true);
         mConfigButton.setEnabled(true);
         mSelectButton.setEnabled(true);
@@ -461,6 +470,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
                     MyLog.w("config.json文件生成失败，请重试!");
                     mFontelloButton.setEnabled(false);
                 }
+                FontelloFrame.this.toFront();
                 mConfigButton.setEnabled(true);
                 mSelectButton.setEnabled(true);
             }
