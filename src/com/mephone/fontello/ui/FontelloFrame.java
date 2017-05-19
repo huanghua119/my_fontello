@@ -54,6 +54,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private JButton mConfigButton;
     private JButton mFontelloButton;
     private JButton mSelectButton;
+    private JButton mOneFontelloButton;
     private JTextArea mFontelloTextArea;
     private JComboBox<FontSettingProp> mNameComboBox;
 
@@ -78,6 +79,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
 
     private FontelloService mService = FontelloService.getInstance();
     private SvgConfig mConfig = null;
+    private boolean mOneFontello = false;
 
     private KeyAdapter mKeyAdapter = new KeyAdapter() {
         public void keyTyped(KeyEvent e) {
@@ -281,6 +283,10 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mFontelloButton.addActionListener(this);
         mSouthPanel.add(mFontelloButton);
 
+        mOneFontelloButton = new JButton("一键生成");
+        mOneFontelloButton.addActionListener(this);
+        mSouthPanel.add(mOneFontelloButton);
+
         mFontelloTextArea = new JTextArea();
         mFontelloTextArea.setLineWrap(true);
         mFontelloTextArea.setEditable(false);
@@ -339,9 +345,14 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 showSvgFileToArea(f);
             }
         } else if (e.getSource() == mConfigButton) {
+            mOneFontello = false;
             buildConfig();
         } else if (e.getSource() == mFontelloButton) {
+            mOneFontello = false;
             startFontello();
+        } else if (e.getSource() == mOneFontelloButton) {
+            mOneFontello = true;
+            buildConfig();
         } else if (e.getSource() == mPicCutItem) {
             getContentPane().remove(mFontelloLayout);
             getContentPane().add(mPng2SvgLayout, BorderLayout.CENTER);
@@ -405,6 +416,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mFontelloButton.setEnabled(false);
         mConfigButton.setEnabled(false);
         mSelectButton.setEnabled(false);
+        mOneFontelloButton.setEnabled(false);
         new Thread() {
             @Override
             public void run() {
@@ -426,6 +438,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mFontelloButton.setEnabled(true);
         mConfigButton.setEnabled(true);
         mSelectButton.setEnabled(true);
+        mOneFontelloButton.setEnabled(true);
     }
 
     private void buildConfig() {
@@ -457,6 +470,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mFontelloButton.setEnabled(false);
         mConfigButton.setEnabled(false);
         mSelectButton.setEnabled(false);
+        mOneFontelloButton.setEnabled(false);
         new Thread() {
             @Override
             public void run() {
@@ -466,13 +480,19 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 if (ok) {
                     MyLog.w("config.json文件已生成，点击 生成字体 按钮生成字库文件！!");
                     mFontelloButton.setEnabled(true);
+                    if (mOneFontello) {
+                        startFontello();
+                    }
                 } else {
                     MyLog.w("config.json文件生成失败，请重试!");
                     mFontelloButton.setEnabled(false);
                 }
-                FontelloFrame.this.toFront();
+                if (!mOneFontello) {
+                    FontelloFrame.this.toFront();
+                }
                 mConfigButton.setEnabled(true);
                 mSelectButton.setEnabled(true);
+                mOneFontelloButton.setEnabled(true);
             }
         }.start();
     }
@@ -502,7 +522,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
                     MyLog.w(svg.getName());
                 }
                 MyLog.w("共 " + svgFiles.length
-                        + " 个svg文件, 点击 生成配置文件 生成config.json！");
+                        + " 个svg文件, 点击 生成配置文件 生成config.json！或点击 一键生成 直接生成字库!");
             }
         }
     }

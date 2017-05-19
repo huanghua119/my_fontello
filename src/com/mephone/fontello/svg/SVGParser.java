@@ -277,20 +277,23 @@ public class SVGParser {
                     Node d = pathList.item(i);
                     org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
                     String data = svgPath.getAttribute("d");
-
-                    String[] allData = data.split("M");
-                    for (String path : allData) {
-                        if (!TextUtils.isEmpty(path)) {
-                            path = "M" + path;
-                            CutSvg svg = caclCutSvg(cutSvgArray, path, names,
-                                    cols, rows, width, height);
-                            svg.setSinglePath(true);
-                        }
+                    if (svgPath.hasAttribute("class")){
+                        continue;
                     }
 
-//                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
-//                            rows, width, height);
-//                    svg.setSinglePath(false);
+//                    String[] allData = data.split("M");
+//                    for (String path : allData) {
+//                        if (!TextUtils.isEmpty(path)) {
+//                            path = "M" + path;
+//                            CutSvg svg = caclCutSvg(cutSvgArray, path, names,
+//                                    cols, rows, width, height);
+//                            svg.setSinglePath(true);
+//                        }
+//                    }
+
+                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
+                            rows, width, height);
+                    svg.setSinglePath(false);
                 }
             }
             MyLog.i("cutSvg end");
