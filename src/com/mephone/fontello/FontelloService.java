@@ -110,6 +110,8 @@ public class FontelloService {
         int descent = ascent - units_per_em;
         String familyname = JsonUtils.getJSONString(configJson, "name");
         JSONArray glyphs = JsonUtils.getJSONArray(configJson, "glyphs");
+        configJson.clear();
+        configJson = null;
 
         FontelloSvg svg = new FontelloSvg();
         svg.setAscent(ascent + "");
@@ -213,6 +215,8 @@ public class FontelloService {
             glyphsObject.put("svg", svgObject);
             glyphsArray.add(glyphsObject);
         }
+        svgFileList.clear();
+        svgFileList = null;
 
         JSONObject configJson = new JSONObject();
         configJson.put("name", config.getName());
@@ -226,8 +230,6 @@ public class FontelloService {
 
         TextUtils.saveFileText(JsonUtils.formatJson(configJson.toString()),
                 SystemConfig.FileSystem.CONFIG_FILE);
-        svgFileList.clear();
-        svgFileList = null;
         configJson.clear();
         configJson = null;
         glyphsArray.clear();
@@ -325,8 +327,11 @@ public class FontelloService {
             String translateY, String scaleX, String scaleY, int type) {
         path = path.replace(" ", "_");
 
-        String content = path + "\n" + translateX + " " + translateY + " "
-                + scaleX + " " + scaleY + " " + type;
+        StringBuffer sb = new StringBuffer();
+        sb.append(path).append("\n").append(translateX).append(" ")
+                .append(translateY).append(" ").append(scaleX).append(" ")
+                .append(scaleY).append(" ").append(type);
+        String content = sb.toString();
 
         File tempPath = new File(SystemConfig.FileSystem.TEMP_PATH);
         TextUtils.saveFileText(content, tempPath.getAbsolutePath());
@@ -367,7 +372,7 @@ public class FontelloService {
      */
     private List<FontSvg> readSvgFile(String svgPath) {
         if (mHaiZiMap == null || mHaiZiMap.size() == 0) {
-            readHaiZiMap();
+            //readHaiZiMap();
         }
         List<FontSvg> result = new ArrayList<FontSvg>();
         File file = new File(svgPath);

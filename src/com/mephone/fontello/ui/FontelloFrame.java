@@ -402,6 +402,12 @@ public class FontelloFrame extends JFrame implements ActionListener {
                     } else {
                         SystemConfig.DefalutConfig.sGB2312_NAME = false;
                     }
+                    if (pps.containsKey("spite")) {
+                        SystemConfig.DefalutConfig.sNAME_SPITE = Boolean
+                                .parseBoolean(pps.getProperty("spite"));
+                    } else {
+                        SystemConfig.DefalutConfig.sNAME_SPITE = false;
+                    }
 
                 } catch (FileNotFoundException e1) {
                     e1.printStackTrace();
@@ -480,9 +486,6 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 if (ok) {
                     MyLog.w("config.json文件已生成，点击 生成字体 按钮生成字库文件！!");
                     mFontelloButton.setEnabled(true);
-                    if (mOneFontello) {
-                        startFontello();
-                    }
                 } else {
                     MyLog.w("config.json文件生成失败，请重试!");
                     mFontelloButton.setEnabled(false);
@@ -493,6 +496,9 @@ public class FontelloFrame extends JFrame implements ActionListener {
                 mConfigButton.setEnabled(true);
                 mSelectButton.setEnabled(true);
                 mOneFontelloButton.setEnabled(true);
+                if (ok && mOneFontello) {
+                    startFontello();
+                }
             }
         }.start();
     }

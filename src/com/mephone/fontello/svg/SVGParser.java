@@ -217,8 +217,10 @@ public class SVGParser {
 
         String end = "</font></defs></svg>";
 
-        String svgText = head + font + fontFace + messGlyph + glyph + end;
-
+        StringBuffer sb = new StringBuffer();
+        sb.append(head).append(font).append(fontFace).append(messGlyph).append(glyph).append(end);
+        CommonUtils.printMemoryInfo();
+        String svgText = sb.toString();
         svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
         TextUtils.saveFileText(svgText, newPath);
     }
@@ -243,6 +245,11 @@ public class SVGParser {
             }
         }
 
+        int count = 0;
+        if (SystemConfig.DefalutConfig.sNAME_SPITE) {
+            String number = svgFile.getName().replace(".svg", "").split("-")[1];
+            count = cols * rows * (Integer.parseInt(number) - 1);
+        }
         try {
             MyLog.i("cutSvg start");
             org.w3c.dom.Document doc = f.createDocument(svgFile.toURI()
@@ -268,7 +275,7 @@ public class SVGParser {
                     if (!TextUtils.isEmpty(path)) {
                         path = "M" + path;
                         CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
-                                rows, width, height);
+                                rows, width, height,count);
                         svg.setSinglePath(true);
                     }
                 }
@@ -278,7 +285,7 @@ public class SVGParser {
                     org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
                     String data = svgPath.getAttribute("d");
                     if (svgPath.hasAttribute("class")){
-                        continue;
+                        //continue;
                     }
 
 //                    String[] allData = data.split("M");
@@ -292,7 +299,7 @@ public class SVGParser {
 //                    }
 
                     CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
-                            rows, width, height);
+                            rows, width, height,count);
                     svg.setSinglePath(false);
                 }
             }
@@ -310,7 +317,7 @@ public class SVGParser {
             for (int j = 0; j < rows; j++) {
                 CutSvg svg = cutSvgArray[i][j];
                 if (svg.getPathList() == null || svg.getPathList().size() == 0) {
-                    int nameIndex = j * rows + i;
+                    int nameIndex = j * rows + i + count;
                     if (nameIndex < names.length()) {
                         String name = names.substring(nameIndex, nameIndex + 1);
                         MyLog.w("缺少  " + name + " 字的svg数据");
@@ -322,7 +329,7 @@ public class SVGParser {
     }
 
     private CutSvg caclCutSvg(CutSvg[][] cutSvgArray, String data,
-            String names, int cols, int rows, int width, int height) {
+            String names, int cols, int rows, int width, int height, int count) {
         // 计算path起始坐标位置
         int index = CommonUtils.calcMin(data.indexOf("h"), data.indexOf("H"),
                 data.indexOf("v"), data.indexOf("V"), data.indexOf("l"),
@@ -340,7 +347,7 @@ public class SVGParser {
         dataList.add(data);
         if (!TextUtils.isEmpty(names)) {
             // 计算path对应的汉字
-            int nameIndex = r * cols + c;
+            int nameIndex = r * cols + c + count;
             String name = names.substring(nameIndex, nameIndex + 1);
             svg.setName(name);
             svg.setUnicode(TextUtils.string2Unicode(name));

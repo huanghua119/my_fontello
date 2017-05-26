@@ -113,6 +113,11 @@ public class SystemConfig {
         public static boolean sGB2312_NAME = false;
 
         /**
+         * 是否分段取字库名
+         */
+        public static boolean sNAME_SPITE = true;
+
+        /**
          * svg图片列
          */
         public static int sCUT_SVG_COLS = 25;

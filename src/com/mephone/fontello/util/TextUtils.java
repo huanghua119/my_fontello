@@ -7,6 +7,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -100,6 +101,16 @@ public class TextUtils {
             writer.close();// 记得关闭
             outStream.close();
 
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void appendTextToFile(String fileName, String content) {
+        try {
+            FileWriter writer = new FileWriter(fileName, true);
+            writer.write(content);
+            writer.close();
         } catch (IOException e) {
             e.printStackTrace();
         }

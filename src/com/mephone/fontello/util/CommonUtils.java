@@ -9,6 +9,8 @@ import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
 
+import com.mephone.fontello.config.MyLog;
+
 public class CommonUtils {
 
     public static final void saveObject(String path, Object saveObject) {
@@ -105,5 +107,12 @@ public class CommonUtils {
             temp = Math.min(temp, i);
         }
         return temp;
+    }
+
+    public static void printMemoryInfo() {
+        Runtime currRuntime = Runtime.getRuntime();
+        int nFreeMemory = (int) (currRuntime.freeMemory() / 1024 / 1024);
+        int nTotalMemory = (int) (currRuntime.totalMemory() / 1024 / 1024);
+        MyLog.i("nFreeMemory:" + nFreeMemory + " nTotalMemory:" + nTotalMemory);
     }
 }
