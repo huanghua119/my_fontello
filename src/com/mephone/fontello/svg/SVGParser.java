@@ -262,46 +262,100 @@ public class SVGParser {
             }
             // 解析path标签
             NodeList pathList = doc.getElementsByTagName("path");
-            if (pathList == null || pathList.getLength() == 0) {
-                return;
-            }
-            int lenght = pathList.getLength();
-            if (lenght == 1) {
-                Node d = pathList.item(0);
-                org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
-                String data = svgPath.getAttribute("d");
-                String[] allData = data.split("M");
-                for (String path : allData) {
-                    if (!TextUtils.isEmpty(path)) {
-                        path = "M" + path;
-                        CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
-                                rows, width, height,count);
-                        svg.setSinglePath(true);
-                    }
-                }
-            } else {
-                for (int i = 0; i < pathList.getLength(); i++) {
-                    Node d = pathList.item(i);
+            if (pathList != null) {
+                int lenght = pathList.getLength();
+                if (lenght == 1) {
+                    Node d = pathList.item(0);
                     org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
                     String data = svgPath.getAttribute("d");
-                    if (svgPath.hasAttribute("class")){
-                        //continue;
+                    String[] allData = data.split("M");
+                    for (String path : allData) {
+                        if (!TextUtils.isEmpty(path)) {
+                            path = "M" + path;
+                            CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
+                                    rows, width, height,count);
+                            svg.setSinglePath(true);
+                        }
                     }
-
-//                    String[] allData = data.split("M");
-//                    for (String path : allData) {
-//                        if (!TextUtils.isEmpty(path)) {
-//                            path = "M" + path;
-//                            CutSvg svg = caclCutSvg(cutSvgArray, path, names,
-//                                    cols, rows, width, height);
-//                            svg.setSinglePath(true);
-//                        }
-//                    }
-
-                    CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
-                            rows, width, height,count);
-                    svg.setSinglePath(false);
+                } else {
+                    for (int i = 0; i < pathList.getLength(); i++) {
+                        Node d = pathList.item(i);
+                        org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
+                        String data = svgPath.getAttribute("d");
+                        if (svgPath.hasAttribute("class")){
+                            //continue;
+                        }
+                        CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
+                                rows, width, height,count);
+                        svg.setSinglePath(false);
+                    }
                 }
+            }
+            List<String> otherPath = new ArrayList<>();
+            // 解析rect标签
+            NodeList rectList = doc.getElementsByTagName("rect");
+            if (rectList != null) {
+                for (int i = 0; i < rectList.getLength(); i++) {
+                    Node d = rectList.item(i);
+                    org.w3c.dom.Element svgRect = (org.w3c.dom.Element) d;
+                    String path = SVGChange.rect2path(svgRect);
+                    if (!TextUtils.isEmpty(path)) {
+                        otherPath.add(path);
+                    }
+                }
+            }
+            // 解析polygon标签
+            NodeList polygonList = doc.getElementsByTagName("polygon");
+            if (polygonList != null) {
+                for (int i = 0; i < polygonList.getLength(); i++) {
+                    Node d = polygonList.item(i);
+                    org.w3c.dom.Element svgPolygon = (org.w3c.dom.Element) d;
+                    String path = SVGChange.polygon2path(svgPolygon);
+                    if (!TextUtils.isEmpty(path)) {
+                        otherPath.add(path);
+                    }
+                }
+            }
+            // 解析polyline标签
+            NodeList polylineList = doc.getElementsByTagName("polyline");
+            if (polylineList != null) {
+                for (int i = 0; i < polylineList.getLength(); i++) {
+                    Node d = polylineList.item(i);
+                    org.w3c.dom.Element svgPolyline = (org.w3c.dom.Element) d;
+                    String path = SVGChange.polyline2path(svgPolyline);
+                    if (!TextUtils.isEmpty(path)) {
+                        otherPath.add(path);
+                    }
+                }
+            }
+            // 解析ellipse标签
+            NodeList ellipseList = doc.getElementsByTagName("ellipse");
+            if (ellipseList != null) {
+                for (int i = 0; i < ellipseList.getLength(); i++) {
+                    Node d = ellipseList.item(i);
+                    org.w3c.dom.Element svgEllipse = (org.w3c.dom.Element) d;
+                    String path = SVGChange.ellipse2path(svgEllipse);
+                    if (!TextUtils.isEmpty(path)) {
+                        otherPath.add(path);
+                    }
+                }
+            }
+            // 解析circle标签
+            NodeList circleList = doc.getElementsByTagName("circle");
+            if (circleList != null) {
+                for (int i = 0; i < circleList.getLength(); i++) {
+                    Node d = circleList.item(i);
+                    org.w3c.dom.Element svgCircle = (org.w3c.dom.Element) d;
+                    String path = SVGChange.circle2path(svgCircle);
+                    if (!TextUtils.isEmpty(path)) {
+                        otherPath.add(path);
+                    }
+                }
+            }
+            for (String path : otherPath) {
+                CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols, rows,
+                        width, height, count);
+                svg.setSinglePath(false);
             }
             MyLog.i("cutSvg end");
         } catch (Exception e) {
@@ -333,9 +387,10 @@ public class SVGParser {
         // 计算path起始坐标位置
         int index = CommonUtils.calcMin(data.indexOf("h"), data.indexOf("H"),
                 data.indexOf("v"), data.indexOf("V"), data.indexOf("l"),
-                data.indexOf("L"), data.indexOf("c"), data.indexOf("C"));
+                data.indexOf("L"), data.indexOf("c"), data.indexOf("C"),
+                data.indexOf("a"));
         String point = data.substring(1, index);
-        String[] points = point.split(",");
+        String[] points = point.replace(",", " ").split(" ");
         int c = (int) Double.parseDouble(points[0]) / width;
         int r = (int) Double.parseDouble(points[1]) / height;
         CutSvg svg = cutSvgArray[c][r];
