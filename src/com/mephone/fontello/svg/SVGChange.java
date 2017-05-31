@@ -181,6 +181,31 @@ public class SVGChange {
     }
 
     /**
+     * 解析并转换line数据为path
+     * @param svgLine
+     * @return
+     */
+    public static String line2path(Element svgLine) {
+        float x1 = 0;
+        float y1 = 0;
+        float x2 = 0;
+        float y2 = 0;
+        if (elementHasValue(svgLine, "x1")) {
+            x1 = Float.parseFloat(svgLine.getAttribute("x1"));
+        }
+        if (elementHasValue(svgLine, "x2")) {
+            x2 = Float.parseFloat(svgLine.getAttribute("x2"));
+        }
+        if (elementHasValue(svgLine, "y1")) {
+            y1 = Float.parseFloat(svgLine.getAttribute("y1"));
+        }
+        if (elementHasValue(svgLine, "y2")) {
+            y2 = Float.parseFloat(svgLine.getAttribute("y2"));
+        }
+        return line2path(x1, y1, x2, y2);
+    }
+
+    /**
      * line to path
      * 直线转换为path
      * @return

@@ -2,7 +2,9 @@ package com.mephone.fontello.svg;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.batik.dom.svg.SAXSVGDocumentFactory;
 import org.apache.batik.util.XMLResourceDescriptor;
@@ -260,6 +262,31 @@ public class SVGParser {
             if (svgList.getLength() != 1) {
                 return;
             }
+            // 解析style标签
+            Map<String, String> fillClassMap = new HashMap<String, String>();
+            NodeList styleList = doc.getElementsByTagName("style");
+            if (styleList != null && styleList.getLength() > 0) {
+                Node d = styleList.item(0);
+                org.w3c.dom.Element svgStyle = (org.w3c.dom.Element) d;
+                String style = svgStyle.getTextContent();
+                if (!TextUtils.isEmpty(style)) {
+                    String[] classJson = style.trim().split("}");
+                    for (String json : classJson) {
+                        String st = json.trim();
+                        int index = st.indexOf("{");
+                        String key = st.substring(1, index);
+                        String content = st.substring(index + 1, st.length());
+
+                        String[] a = content.split(";");
+                        for (String b : a) {
+                            if (b.contains("fill")) {
+                                String fill = b.split(":")[1];
+                                fillClassMap.put(key, fill);
+                            }
+                        }
+                    }
+                }
+            }
             // 解析path标签
             NodeList pathList = doc.getElementsByTagName("path");
             if (pathList != null) {
@@ -281,10 +308,10 @@ public class SVGParser {
                     for (int i = 0; i < pathList.getLength(); i++) {
                         Node d = pathList.item(i);
                         org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
-                        String data = svgPath.getAttribute("d");
-                        if (svgPath.hasAttribute("class")){
-                            //continue;
+                        if (filterFill(fillClassMap, svgPath)) {
+                            continue;
                         }
+                        String data = svgPath.getAttribute("d");
                         CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
                                 rows, width, height,count);
                         svg.setSinglePath(false);
@@ -298,6 +325,9 @@ public class SVGParser {
                 for (int i = 0; i < rectList.getLength(); i++) {
                     Node d = rectList.item(i);
                     org.w3c.dom.Element svgRect = (org.w3c.dom.Element) d;
+                    if (filterFill(fillClassMap, svgRect)) {
+                        continue;
+                    }
                     String path = SVGChange.rect2path(svgRect);
                     if (!TextUtils.isEmpty(path)) {
                         otherPath.add(path);
@@ -310,6 +340,9 @@ public class SVGParser {
                 for (int i = 0; i < polygonList.getLength(); i++) {
                     Node d = polygonList.item(i);
                     org.w3c.dom.Element svgPolygon = (org.w3c.dom.Element) d;
+                    if (filterFill(fillClassMap, svgPolygon)) {
+                        continue;
+                    }
                     String path = SVGChange.polygon2path(svgPolygon);
                     if (!TextUtils.isEmpty(path)) {
                         otherPath.add(path);
@@ -322,6 +355,9 @@ public class SVGParser {
                 for (int i = 0; i < polylineList.getLength(); i++) {
                     Node d = polylineList.item(i);
                     org.w3c.dom.Element svgPolyline = (org.w3c.dom.Element) d;
+                    if (filterFill(fillClassMap, svgPolyline)) {
+                        continue;
+                    }
                     String path = SVGChange.polyline2path(svgPolyline);
                     if (!TextUtils.isEmpty(path)) {
                         otherPath.add(path);
@@ -334,6 +370,9 @@ public class SVGParser {
                 for (int i = 0; i < ellipseList.getLength(); i++) {
                     Node d = ellipseList.item(i);
                     org.w3c.dom.Element svgEllipse = (org.w3c.dom.Element) d;
+                    if (filterFill(fillClassMap, svgEllipse)) {
+                        continue;
+                    }
                     String path = SVGChange.ellipse2path(svgEllipse);
                     if (!TextUtils.isEmpty(path)) {
                         otherPath.add(path);
@@ -346,6 +385,9 @@ public class SVGParser {
                 for (int i = 0; i < circleList.getLength(); i++) {
                     Node d = circleList.item(i);
                     org.w3c.dom.Element svgCircle = (org.w3c.dom.Element) d;
+                    if (filterFill(fillClassMap, svgCircle)) {
+                        continue;
+                    }
                     String path = SVGChange.circle2path(svgCircle);
                     if (!TextUtils.isEmpty(path)) {
                         otherPath.add(path);
@@ -465,5 +507,24 @@ public class SVGParser {
         String outPath = newPath + "/" + name + ".svg";
         MyLog.i("generateCutSvg outPath:" + outPath);
         TextUtils.saveFileText(svgText, outPath);
+    }
+
+    /**
+     * 过滤svg数据的class属性的风格（当fill为none值时为无效数据）
+     * @param fillClassMap
+     * @param element
+     * @return
+     */
+    private boolean filterFill(Map<String, String> fillClassMap, org.w3c.dom.Element element) {
+        if (element.hasAttribute("class")) {
+            String key = element.getAttribute("class");
+            if (fillClassMap.containsKey(key)) {
+                String fill = fillClassMap.get(key);
+                if ("none".equals(fill)) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 }
