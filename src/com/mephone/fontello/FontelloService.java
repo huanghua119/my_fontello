@@ -328,9 +328,31 @@ public class FontelloService {
         path = path.replace(" ", "_");
 
         StringBuffer sb = new StringBuffer();
-        sb.append(path).append("\n").append(translateX).append(" ")
-                .append(translateY).append(" ").append(scaleX).append(" ")
-                .append(scaleY).append(" ").append(type);
+        sb.append(path).append("\n").append(type).append(" ").append(translateX).append(" ").append(translateY)
+                .append(" ").append(scaleX).append(" ").append(scaleY);
+        String content = sb.toString();
+
+        File tempPath = new File(SystemConfig.FileSystem.TEMP_PATH);
+        TextUtils.saveFileText(content, tempPath.getAbsolutePath());
+        String cmd = "svgpath \"" + tempPath.getAbsolutePath() + "\"";
+        String result = Cmd.run(cmd, false);
+        tempPath.delete();
+        return result;
+    }
+
+    /**
+     * 根据matrix矩阵改变path路径
+     * @param path
+     * @param matrix
+     * @return
+     */
+    public String changeMatrix(String path, String matrix) {
+        path = path.replace(" ", "_");
+        StringBuffer sb = new StringBuffer();
+
+        matrix = matrix.replace(",", " ");
+
+        sb.append(path).append("\n").append(3).append(" ").append(matrix);
         String content = sb.toString();
 
         File tempPath = new File(SystemConfig.FileSystem.TEMP_PATH);

@@ -115,7 +115,7 @@ public class SystemConfig {
         /**
          * 是否分段取字库名
          */
-        public static boolean sNAME_SPITE = true;
+        public static boolean sNAME_SPITE = false;
 
         /**
          * svg图片列

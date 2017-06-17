@@ -2,6 +2,7 @@ package com.mephone.fontello.svg;
 
 import org.w3c.dom.Element;
 
+import com.mephone.fontello.FontelloService;
 import com.mephone.fontello.util.TextUtils;
 
 /**
@@ -31,6 +32,7 @@ public class SVGChange {
         float rheight = 0;
         float rx = -1000;
         float ry = -1000;
+        String matrix = "";
         if (elementHasValue(svgRect, "x")) {
             x = Float.parseFloat(svgRect.getAttribute("x"));
         }
@@ -49,7 +51,15 @@ public class SVGChange {
         if (elementHasValue(svgRect, "ry")) {
             ry = Float.parseFloat(svgRect.getAttribute("ry"));
         }
-        return rect2path(x, y, rwidth, rheight, rx, ry);
+        if (elementHasValue(svgRect, "transform")) {
+            matrix = svgRect.getAttribute("transform");
+            matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+        }
+        String path = rect2path(x, y, rwidth, rheight, rx, ry);
+        if (!TextUtils.isEmpty(matrix)) {
+            path = FontelloService.getInstance().changeMatrix(path, matrix);
+        }
+        return path;
     }
 
     /**
@@ -268,13 +278,19 @@ public class SVGChange {
     public static void main(String[] args) {
         //<rect x="12.623" y="33.078" width="31" height="3"/>
         //<rect x="577.671" y="1359.868" width="7.46" height="2.9"/>
-        float x = Float.parseFloat("577.671");
-        float y = Float.parseFloat("1359.868");
-        float width = Float.parseFloat("7.46");
-        float height = Float.parseFloat("2.9");
+        float x = Float.parseFloat("819.075");
+        float y = Float.parseFloat("16.344");
+        float width = Float.parseFloat("3.35");
+        float height = Float.parseFloat("2");
         float rx = -1000;
         float ry = -1000;
+
+        //matrix(0.1493 -0.9888 0.9888 0.1493 681.1014 826.312)/* a=1, b=0, c=0, d=1, e=30, f=30 */
+
+        String matrix = "0.1493 -0.9888 0.9888 0.1493 681.1014 826.312";
+
         String path = rect2path(x, y, width, height, rx, ry);
+        path = FontelloService.getInstance().changeMatrix(path, matrix);
         //String polygon = "362.467,50.485 365.467,50.485 365.467,22.568 379.623,22.568 379.623,19.568 348.717,19.568 348.717,22.568 362.467,22.568      ";
         //String path = polygon2path(polygon);
         //<circle cx="100" cy="100" r="50"></circle>
@@ -282,6 +298,7 @@ public class SVGChange {
 //        float cy = 100;
 //        float r = 50;
 //        String path = ellipse2path(cx, cy, r, r);
+
         System.out.println("path:" + path);
     }
 }
