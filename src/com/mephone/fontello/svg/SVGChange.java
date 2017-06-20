@@ -141,7 +141,16 @@ public class SVGChange {
         if (elementHasValue(svgCircle, "r")) {
             r = Float.parseFloat(svgCircle.getAttribute("r"));
         }
-        return ellipse2path(cx, cy, r, r);
+        String matrix = "";
+        if (elementHasValue(svgCircle, "transform")) {
+            matrix = svgCircle.getAttribute("transform");
+            matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+        }
+        String path = ellipse2path(cx, cy, r, r);
+        if (!TextUtils.isEmpty(matrix)) {
+            path = FontelloService.getInstance().changeMatrix(path, matrix);
+        }
+        return path;
     }
 
     /**
@@ -166,7 +175,16 @@ public class SVGChange {
         if (elementHasValue(svgEllipse, "ry")) {
             ry = Float.parseFloat(svgEllipse.getAttribute("ry"));
         }
-        return ellipse2path(cx, cy, rx, ry);
+        String matrix = "";
+        if (elementHasValue(svgEllipse, "transform")) {
+            matrix = svgEllipse.getAttribute("transform");
+            matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+        }
+        String path = ellipse2path(cx, cy, rx, ry);
+        if (!TextUtils.isEmpty(matrix)) {
+            path = FontelloService.getInstance().changeMatrix(path, matrix);
+        }
+        return path;
     }
 
     /**
@@ -212,7 +230,16 @@ public class SVGChange {
         if (elementHasValue(svgLine, "y2")) {
             y2 = Float.parseFloat(svgLine.getAttribute("y2"));
         }
-        return line2path(x1, y1, x2, y2);
+        String matrix = "";
+        if (elementHasValue(svgLine, "transform")) {
+            matrix = svgLine.getAttribute("transform");
+            matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+        }
+        String path = line2path(x1, y1, x2, y2);
+        if (!TextUtils.isEmpty(matrix)) {
+            path = FontelloService.getInstance().changeMatrix(path, matrix);
+        }
+        return path;
     }
 
     /**
@@ -230,10 +257,19 @@ public class SVGChange {
      * @param svgPloygon
      * @return
      */
-    public static String polyline2path(Element svgPloygon) {
-        if (svgPloygon.hasAttribute("points")) {
-            String points = svgPloygon.getAttribute("points");
-            return polyline2path(points);
+    public static String polyline2path(Element svgPolyline) {
+        if (svgPolyline.hasAttribute("points")) {
+            String points = svgPolyline.getAttribute("points");
+            String matrix = "";
+            if (elementHasValue(svgPolyline, "transform")) {
+                matrix = svgPolyline.getAttribute("transform");
+                matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+            }
+            String path = polyline2path(points);
+            if (!TextUtils.isEmpty(matrix)) {
+                path = FontelloService.getInstance().changeMatrix(path, matrix);
+            }
+            return path;
         }
         return "";
     }
@@ -258,7 +294,16 @@ public class SVGChange {
     public static String polygon2path(Element svgPloygon) {
         if (svgPloygon.hasAttribute("points")) {
             String points = svgPloygon.getAttribute("points");
-            return polygon2path(points);
+            String matrix = "";
+            if (elementHasValue(svgPloygon, "transform")) {
+                matrix = svgPloygon.getAttribute("transform");
+                matrix = matrix.replace("matrix", "").replace("(", "").replace(")", "").trim();
+            }
+            String path = polygon2path(points);
+            if (!TextUtils.isEmpty(matrix)) {
+                path = FontelloService.getInstance().changeMatrix(path, matrix);
+            }
+            return path;
         }
         return "";
     }
