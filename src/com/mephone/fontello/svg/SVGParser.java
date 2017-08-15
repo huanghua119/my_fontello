@@ -445,9 +445,11 @@ public class SVGParser {
         if (!TextUtils.isEmpty(names)) {
             // 计算path对应的汉字
             int nameIndex = r * cols + c + count;
-            String name = names.substring(nameIndex, nameIndex + 1);
-            svg.setName(name);
-            svg.setUnicode(TextUtils.string2Unicode(name));
+            if (nameIndex <= names.length()) {
+                String name = names.substring(nameIndex, nameIndex + 1);
+                svg.setName(name);
+                svg.setUnicode(TextUtils.string2Unicode(name));
+            }
         } else {
             String name = "map_" + r + "_" + c;
             svg.setName(name);

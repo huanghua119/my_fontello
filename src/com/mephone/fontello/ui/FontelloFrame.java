@@ -374,6 +374,8 @@ public class FontelloFrame extends JFrame implements ActionListener {
             if (index == 0) {
                 mFontNameText.setText("iekie");
                 mFontNameText.setEditable(true);
+                SystemConfig.DefalutConfig.sNAME_SPITE = false;
+                SystemConfig.DefalutConfig.sGB2312_NAME = false;
                 loadData();
             } else {
                 mFontNameText.setEditable(false);

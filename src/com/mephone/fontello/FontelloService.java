@@ -447,7 +447,7 @@ public class FontelloService {
             mComputerTable = new ComputerTable();
         }
         String mac = CommonUtils.getLocalMac();
-        return mComputerTable.isEffectiveComputer(mac);
+        return true;//mComputerTable.isEffectiveComputer(mac);
     }
 
     public boolean isActivation() {
@@ -578,8 +578,18 @@ public class FontelloService {
             for (File file : pngs) {
                 if (file.getName().endsWith(".svg")) {
                     MyLog.i("file:" + file.getAbsolutePath());
-                    String names = TextUtils.readFile(file
-                            .getAbsolutePath().replace(".svg", ".txt"));
+
+                    String filePath = file.getAbsolutePath().replace(".svg", ".txt");
+
+                    if (SystemConfig.DefalutConfig.sNAME_SPITE) {
+                        int index = filePath.lastIndexOf("-");
+                        if (index != -1) {
+                            filePath = filePath.substring(0, index) + ".txt";
+                        }
+                    }
+
+                    String names = TextUtils.readFile(filePath);
+
                     names = TextUtils.replaceBlank(names);
                     if (TextUtils.isEmpty(names)
                             && SystemConfig.DefalutConfig.sGB2312_NAME) {
