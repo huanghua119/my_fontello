@@ -301,7 +301,9 @@ public class SVGParser {
                             path = "M" + path;
                             CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
                                     rows, width, height,count);
-                            svg.setSinglePath(true);
+                            if (svg != null) {
+                                svg.setSinglePath(true);
+                            }
                         }
                     }
                 } else {
@@ -314,7 +316,9 @@ public class SVGParser {
                         String data = svgPath.getAttribute("d");
                         CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
                                 rows, width, height,count);
-                        svg.setSinglePath(false);
+                        if (svg != null) {
+                            svg.setSinglePath(false);
+                        }
                     }
                 }
             }
@@ -397,7 +401,9 @@ public class SVGParser {
             for (String path : otherPath) {
                 CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols, rows,
                         width, height, count);
-                svg.setSinglePath(false);
+                if (svg != null) {
+                    svg.setSinglePath(false);
+                }
             }
             MyLog.i("cutSvg end");
         } catch (Exception e) {
@@ -430,11 +436,17 @@ public class SVGParser {
         int index = CommonUtils.calcMin(data.indexOf("h"), data.indexOf("H"),
                 data.indexOf("v"), data.indexOf("V"), data.indexOf("l"),
                 data.indexOf("L"), data.indexOf("c"), data.indexOf("C"),
-                data.indexOf("a"));
+                data.indexOf("a"), data.indexOf("A"));
         String point = data.substring(1, index);
         String[] points = point.replace(",", " ").split(" ");
         int c = (int) Double.parseDouble(points[0]) / width;
         int r = (int) Double.parseDouble(points[1]) / height;
+        if (c >= cutSvgArray.length) {
+            return null;
+        }
+        if (r >= cutSvgArray[c].length) {
+            return null;
+        }
         CutSvg svg = cutSvgArray[c][r];
         List<String> dataList = svg.getPathList();
         if (dataList == null) {
