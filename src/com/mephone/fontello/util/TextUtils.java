@@ -373,4 +373,23 @@ public class TextUtils {
     public static boolean fileExists(String path) {
         return new File(path).exists();
     }
+
+    public static boolean equals(String text1, String text2) {
+        if (text1 == null && text2 == null) {
+            return true;
+        }
+        if ((text1 == null && text2 != null)
+                || (text1 != null && text2 == null)) {
+            return false;
+        }
+
+        if ("".equals(text1) && "".equals(text2)) {
+            return true;
+        }
+        if (("".equals(text1) && !"".equals(text2))
+                || (!"".equals(text1) && "".equals(text2))) {
+            return false;
+        }
+        return text1.equals(text2);
+    }
 }

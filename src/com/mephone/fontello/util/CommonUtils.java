@@ -8,7 +8,9 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.InetAddress;
 import java.net.NetworkInterface;
+import java.util.List;
 
+import com.mephone.fontello.bean.FontSvg;
 import com.mephone.fontello.config.MyLog;
 
 public class CommonUtils {
@@ -95,6 +97,7 @@ public class CommonUtils {
 
     /**
      * 计算最小值
+     * 
      * @param index
      * @return
      */
@@ -114,5 +117,17 @@ public class CommonUtils {
         int nFreeMemory = (int) (currRuntime.freeMemory() / 1024 / 1024);
         int nTotalMemory = (int) (currRuntime.totalMemory() / 1024 / 1024);
         MyLog.i("nFreeMemory:" + nFreeMemory + " nTotalMemory:" + nTotalMemory);
+    }
+
+    public static boolean isContains(List<FontSvg> list, FontSvg fontSvg) {
+        if (list == null || list.size() == 0 || fontSvg == null) {
+            return false;
+        }
+        for (FontSvg svg : list) {
+            if (svg != null && TextUtils.equals(svg.getName(), fontSvg.getName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }

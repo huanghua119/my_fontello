@@ -220,7 +220,8 @@ public class SVGParser {
         String end = "</font></defs></svg>";
 
         StringBuffer sb = new StringBuffer();
-        sb.append(head).append(font).append(fontFace).append(messGlyph).append(glyph).append(end);
+        sb.append(head).append(font).append(fontFace).append(messGlyph)
+                .append(glyph).append(end);
         CommonUtils.printMemoryInfo();
         String svgText = sb.toString();
         svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
@@ -299,8 +300,8 @@ public class SVGParser {
                     for (String path : allData) {
                         if (!TextUtils.isEmpty(path)) {
                             path = "M" + path;
-                            CutSvg svg = caclCutSvg(cutSvgArray, path, names, cols,
-                                    rows, width, height,count);
+                            CutSvg svg = caclCutSvg(cutSvgArray, path, names,
+                                    cols, rows, width, height, count);
                             if (svg != null) {
                                 svg.setSinglePath(true);
                             }
@@ -315,7 +316,7 @@ public class SVGParser {
                         }
                         String data = svgPath.getAttribute("d");
                         CutSvg svg = caclCutSvg(cutSvgArray, data, names, cols,
-                                rows, width, height,count);
+                                rows, width, height, count);
                         if (svg != null) {
                             svg.setSinglePath(false);
                         }
@@ -525,11 +526,13 @@ public class SVGParser {
 
     /**
      * 过滤svg数据的class属性的风格（当fill为none值时为无效数据）
+     * 
      * @param fillClassMap
      * @param element
      * @return
      */
-    private boolean filterFill(Map<String, String> fillClassMap, org.w3c.dom.Element element) {
+    private boolean filterFill(Map<String, String> fillClassMap,
+            org.w3c.dom.Element element) {
         if (element.hasAttribute("class")) {
             String key = element.getAttribute("class");
             if (fillClassMap.containsKey(key)) {
@@ -541,4 +544,111 @@ public class SVGParser {
         }
         return false;
     }
+
+    /**
+     * 解析ttf2svg生成的svg文件
+     * 
+     * @param path
+     * @return
+     */
+    public List<FontSvg> parserBigSvg(String path) {
+        //MyLog.i("parserBigSvg start");
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        }
+        String parser = XMLResourceDescriptor.getXMLParserClassName();
+        SAXSVGDocumentFactory f = new SAXSVGDocumentFactory(parser);
+        List<FontSvg> result = new ArrayList<>();
+        try {
+            org.w3c.dom.Document doc = f
+                    .createDocument(file.toURI().toString());
+
+            // 解析svg标签
+            NodeList svgList = doc.getElementsByTagName("svg");
+            if (svgList.getLength() != 1) {
+                return null;
+            }
+            // 解析glyph标签
+            NodeList pathList = doc.getElementsByTagName("glyph");
+            if (pathList == null || pathList.getLength() == 0) {
+                return null;
+            }
+
+            NodeList faceList = doc.getElementsByTagName("font-face");
+            // 获取font-face标签下的bbox
+            Node node = faceList.item(0);
+            org.w3c.dom.Element els = (org.w3c.dom.Element) node;
+            String bboxText = els.getAttribute("bbox");
+
+            // 解析bbox，生成viewBox格式数据和transform数据
+            String[] bbox = bboxText.split(" ");
+            if (bbox == null || bbox.length != 4) {
+                MyLog.i("bbox error:" + bboxText);
+                return null;
+            }
+
+            int x = Integer.parseInt(bbox[2]) - Integer.parseInt(bbox[0]);
+            int y = Integer.parseInt(bbox[3]) - Integer.parseInt(bbox[1]);
+            String viewBox = "0 0 " + x + " " + y;
+            String transform = "translate(0.0," + bbox[3] + ") scale(1,-1)";
+
+            // 遍历glyph标签，
+            for (int i = 0; i < pathList.getLength(); i++) {
+                Node d = pathList.item(i);
+                org.w3c.dom.Element svgPath = (org.w3c.dom.Element) d;
+                String data = svgPath.getAttribute("d");
+                String name = svgPath.getAttribute("glyph-name");
+                //MyLog.i("parserJoinSvg name:" + name + " data: " + data);
+                FontSvg svg = new FontSvg();
+                svg.setPathD(data);
+                svg.setTransform(transform);
+                svg.setViewBox(viewBox);
+                svg.setName(name);
+                if (!TextUtils.isEmpty(name.trim()) && !CommonUtils.isContains(result, svg)) {
+                    result.add(svg);
+                }
+            }
+
+            //MyLog.i("parserBigSvg end");
+        } catch (Exception e) {
+            MyLog.w("解析svg失败...path:" + path);
+            MyLog.w(e.toString());
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    /**
+     * 将ttf2svg生成的大svg文件数据生成为可查看的小svg文件
+     * 
+     * @param svg
+     * @param newPath
+     */
+    public void generateFontSvg(FontSvg svg, String newPath) {
+        if (svg == null) {
+            return;
+        }
+        String head = "<?xml version=\"1.0\" standalone=\"no\"?><!DOCTYPE svg PUBLIC \"-//W3C//DTD SVG 20010904//EN\" \"http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd\">";
+        String svgTag = "<svg version=\"1.0\" xmlns=\"http://www.w3.org/2000/svg\" width=\"256px\" height=\"256px\" viewBox=\""
+                + svg.getViewBox()
+                + "\" preserveAspectRatio=\"xMidYMid meet\">";
+        String transform = "transform=\"" + svg.getTransform() + "\"";
+        String pathTag = "<path " + transform + " d=\"" + svg.getPathD()
+                + "\"/>";
+        String end = "</svg>";
+
+        String svgText = head + svgTag + pathTag + end;
+        svgText = svgText.replace("<", "\n<").replaceFirst("\n<", "<");
+
+        String name = svg.getName();
+        if (TextUtils.isEmpty(name)) {
+            return;
+        }
+
+        String outPath = newPath + "/" + name + ".svg";
+        MyLog.i("generateFontSvg outPath:" + outPath);
+        TextUtils.saveFileText(svgText, outPath);
+    }
+
 }

@@ -328,8 +328,9 @@ public class FontelloService {
         path = path.replace(" ", "_");
 
         StringBuffer sb = new StringBuffer();
-        sb.append(path).append("\n").append(type).append(" ").append(translateX).append(" ").append(translateY)
-                .append(" ").append(scaleX).append(" ").append(scaleY);
+        sb.append(path).append("\n").append(type).append(" ")
+                .append(translateX).append(" ").append(translateY).append(" ")
+                .append(scaleX).append(" ").append(scaleY);
         String content = sb.toString();
 
         File tempPath = new File(SystemConfig.FileSystem.TEMP_PATH);
@@ -342,6 +343,7 @@ public class FontelloService {
 
     /**
      * 根据matrix矩阵改变path路径
+     * 
      * @param path
      * @param matrix
      * @return
@@ -382,7 +384,7 @@ public class FontelloService {
             String value = line.substring(0, 1).trim();
             String key = line.substring(1, line.length()).trim();
             mHaiZiMap.put(key, value);
-            //MyLog.i(key + " " + value);
+            // MyLog.i(key + " " + value);
         }
     }
 
@@ -394,7 +396,7 @@ public class FontelloService {
      */
     private List<FontSvg> readSvgFile(String svgPath) {
         if (mHaiZiMap == null || mHaiZiMap.size() == 0) {
-            //readHaiZiMap();
+            // readHaiZiMap();
         }
         List<FontSvg> result = new ArrayList<FontSvg>();
         File file = new File(svgPath);
@@ -447,7 +449,7 @@ public class FontelloService {
             mComputerTable = new ComputerTable();
         }
         String mac = CommonUtils.getLocalMac();
-        return true;//mComputerTable.isEffectiveComputer(mac);
+        return true;// mComputerTable.isEffectiveComputer(mac);
     }
 
     public boolean isActivation() {
@@ -465,6 +467,7 @@ public class FontelloService {
 
     /**
      * 遍历目录
+     * 
      * @param path
      * @return
      */
@@ -555,9 +558,7 @@ public class FontelloService {
                                 && !SystemConfig.DefalutConfig.sPNG_NO_NAME) {
                             MyLog.w("字样图片对应的文本文件没找到 fileName:" + file.getName());
                         } else {
-                            CutImage.cut2(
-                                    file,
-                                    names,
+                            CutImage.cut2(file, names,
                                     SystemConfig.DefalutConfig.sCUT_PNG_COLS,
                                     SystemConfig.DefalutConfig.sCUT_PNG_ROWS);
                         }
@@ -579,7 +580,8 @@ public class FontelloService {
                 if (file.getName().endsWith(".svg")) {
                     MyLog.i("file:" + file.getAbsolutePath());
 
-                    String filePath = file.getAbsolutePath().replace(".svg", ".txt");
+                    String filePath = file.getAbsolutePath().replace(".svg",
+                            ".txt");
 
                     if (SystemConfig.DefalutConfig.sNAME_SPITE) {
                         int index = filePath.lastIndexOf("-");
@@ -615,11 +617,12 @@ public class FontelloService {
 
     /**
      * 递归遍历目录下所有指定后缀的文件
+     * 
      * @param path
      * @param end
      * @return
      */
-    public List<File> getFiles(String path, String... end){
+    public List<File> getFiles(String path, String... end) {
         File file = new File(path);
         if (!file.exists()) {
             return null;
@@ -631,7 +634,8 @@ public class FontelloService {
                 int index = f.getName().lastIndexOf(".");
                 if (end != null) {
                     for (String e : end) {
-                        if (f.getName().substring(index).toLowerCase().equals(e)) {
+                        if (f.getName().substring(index).toLowerCase()
+                                .equals(e)) {
                             result.add(f);
                             break;
                         }
@@ -639,7 +643,7 @@ public class FontelloService {
                 }
             } else {
                 List<File> lists = getFiles(f.getAbsolutePath(), end);
-                if (lists != null && lists.size() >0) {
+                if (lists != null && lists.size() > 0) {
                     result.addAll(lists);
                 }
             }
@@ -647,4 +651,19 @@ public class FontelloService {
         return result;
     }
 
+    /**
+     * 执行ttf2svg命令,将一个字体生成svg格式文件
+     * 
+     * @param ttf
+     */
+    public void ttf2svg(String path, String toPath) {
+        if (new File(path).exists()) {
+            File toFile = new File(toPath);
+            String cmd = "ttf2svg " + path;
+            Cmd.run(cmd, false);
+
+            cmd = "mv " + toFile.getName() + " " + toPath;
+            Cmd.run(cmd, false);
+        }
+    }
 }

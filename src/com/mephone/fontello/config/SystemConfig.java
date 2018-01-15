@@ -75,6 +75,11 @@ public class SystemConfig {
          * 提取TTF 字库目录
          */
         public static final String DRAW_TTF = DRAW_PATH + "ttf/";
+
+        /**
+         * 字库目录
+         */
+        public static final String FONTS_PATH = ROOT_DIR + "fonts/";
     }
 
     public static class DefalutConfig {
