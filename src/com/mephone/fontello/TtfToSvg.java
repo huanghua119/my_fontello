@@ -38,7 +38,14 @@ public class TtfToSvg {
             String c = text.charAt(i) + "";
             String outPath = ttfPath.substring(0, ttfPath.lastIndexOf("."))
                     + File.separator + c + ".png";
-            Ttf2png.ttf2png(ttf, outPath, c, 200f);
+            boolean ok = Ttf2png.ttf2png(ttf, outPath, c, 200f);
+            if (ok) {
+                File pngFile = new File(outPath);
+                if (pngFile.exists()) {
+                    FontelloService.getInstance().png2svg(new File(outPath));
+                    pngFile.delete();
+                }
+            }
         }
     }
 
