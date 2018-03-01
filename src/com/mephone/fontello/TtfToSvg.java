@@ -26,7 +26,7 @@ public class TtfToSvg {
         String ttfText = TextUtils.readFile(FontelloService.class
                 .getResourceAsStream("/com/mephone/fontello/GB2312完整字库.txt"));
         ttfText = TextUtils.replaceBlank(ttfText);
-        
+
         for (File file : files) {
             startDrawText(file, ttfText);
         }

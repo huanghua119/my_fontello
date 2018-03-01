@@ -1,4 +1,4 @@
-1. 安装node.js, npm
+﻿1. 安装node.js, npm
     ubuntu
         官网:https://nodejs.org/en/
         下载最新版本tar.xz文件后解压  先xz -d xxx.tar.xz   再tar xvf xxx.tar
@@ -26,3 +26,9 @@
     windows
         1.将changePath.js文件复制到C:\Users\用户名\AppData\Roaming\npm\node_modules\svgpath目录下
         2.svgpath和svgpath.cmd文件复制到C:\Users用户名\AppData\Roaming\npm目录下
+
+4 安装potrace ,imagemagick
+    ubuntu
+        sudo apt-get install potrace imagemagick
+    win7
+        将目录下的ImageMagick-7.0.1-4-Q16-x64-dll.zip和potrace-1.15.win64.zip解压安装并设置环境变量
