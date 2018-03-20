@@ -75,8 +75,11 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private JTextField mCutSideHeightText;
     private JTextArea mPng2SvgTextArea;
 
+    private ShadowFrame mShadowLayout;
+
     private JMenuItem mPicCutItem;
     private JMenuItem mFontelloItem;
+    private JMenuItem mShadowItem;
 
     private FontelloService mService = FontelloService.getInstance();
     private SvgConfig mConfig = null;
@@ -106,6 +109,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         createFontelloLayout();
         createMenuBar();
         createPngSvgLayout();
+        mShadowLayout = new ShadowFrame();
 
         MyLog.setTextArea(mFontelloTextArea);
         getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
@@ -122,8 +126,11 @@ public class FontelloFrame extends JFrame implements ActionListener {
         mPicCutItem.addActionListener(this);
         mFontelloItem = new JMenuItem("fontello工具");
         mFontelloItem.addActionListener(this);
+        mShadowItem = new JMenuItem("渐变字体工具");
+        mShadowItem.addActionListener(this);
         menu.add(mFontelloItem);
         menu.add(mPicCutItem);
+        menu.add(mShadowItem);
         menuBar.add(menu);
         this.setJMenuBar(menuBar);
     }
@@ -360,14 +367,22 @@ public class FontelloFrame extends JFrame implements ActionListener {
             buildConfig();
         } else if (e.getSource() == mPicCutItem) {
             getContentPane().remove(mFontelloLayout);
+            getContentPane().remove(mShadowLayout);
             getContentPane().add(mPng2SvgLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mPng2SvgTextArea);
             updateUI(mPng2SvgLayout);
         } else if (e.getSource() == mFontelloItem) {
             getContentPane().remove(mPng2SvgLayout);
+            getContentPane().remove(mShadowLayout);
             getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mFontelloTextArea);
             updateUI(mFontelloLayout);
+        } else if (e.getSource() == mShadowItem) {
+            mShadowLayout.update();
+            getContentPane().remove(mFontelloLayout);
+            getContentPane().remove(mPng2SvgLayout);
+            getContentPane().add(mShadowLayout, BorderLayout.CENTER);
+            updateUI(mShadowLayout);
         } else if (e.getSource() == mRenPngButton) {
             renPng();
         } else if (e.getSource() == mCutPngButton) {

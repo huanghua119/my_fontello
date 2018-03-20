@@ -80,6 +80,8 @@ public class SystemConfig {
          * 字库目录
          */
         public static final String FONTS_PATH = ROOT_DIR + "fonts/";
+
+        public static final String SHADOW_PATH = ROOT_DIR + "shadow/";
     }
 
     public static class DefalutConfig {
