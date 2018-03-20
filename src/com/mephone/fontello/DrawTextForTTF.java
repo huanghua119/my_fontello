@@ -28,7 +28,7 @@ public class DrawTextForTTF {
                     String c = text.charAt(i) + "";
                     String out = SystemConfig.FileSystem.DRAW_PATH + "out/" + c
                             + "/" + TextUtils.getFileName(file) + ".png";
-                    Ttf2png.ttf2png(file, out, c, 512f);
+                    Ttf2png.ttf2png(file, out, c, 512f, 512f);
                 }
             }
         }

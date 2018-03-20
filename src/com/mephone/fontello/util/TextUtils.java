@@ -44,7 +44,7 @@ public class TextUtils {
             char c = string.charAt(i);
             unicode.append(Integer.toHexString(c));
         }
-        return unicode.toString();
+        return unicode.toString().toUpperCase();
     }
 
     public static String getFileText(String f, boolean singleLine) {
@@ -368,6 +368,10 @@ public class TextUtils {
             return file.getName().substring(0, index);
         }
         return "";
+    }
+
+    public static String getFileName(String path) {
+        return getFileName(new File(path));
     }
 
     public static boolean fileExists(String path) {

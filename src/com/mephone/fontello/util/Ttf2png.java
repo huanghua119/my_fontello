@@ -24,19 +24,19 @@ public class Ttf2png {
         String outPath = "data/蜖.png";
         File fontFile = new File(
                 "/home/huanghua/android/workspace/CreateFontTools/data/convert/font/义启圣诞体-v5.01-zh00037.ttf");
-        drawTextInImg(outPath, "蜖", "#000000", 200f, fontFile);
+        drawTextInImg(outPath, "蜖", "#000000", 200f, 200f, fontFile);
     }
 
     private static Map<String, Font> mCacheFont = new HashMap<>();
 
     public static boolean ttf2png(String fontFile, String out, String label,
-            float textSize) {
-        return ttf2png(new File(fontFile), out, label, textSize);
+            float textSize, float pngSize) {
+        return ttf2png(new File(fontFile), out, label, textSize, pngSize);
     }
 
     public static boolean ttf2png(File fontFile, String out, String label,
-            float textSize) {
-        return drawTextInImg(out, label, "#000000", textSize, fontFile);
+            float textSize, float pngSize) {
+        return drawTextInImg(out, label, "#000000", textSize, pngSize, fontFile);
     }
 
     public static boolean checkChar(File fontFile, String text) {
@@ -103,7 +103,7 @@ public class Ttf2png {
     }
 
     public static boolean drawTextInImg(String outFile, String text,
-            String color, float textSize, File wmFont) {
+            String color, float textSize, float pngSize, File wmFont) {
         ImageIcon imgIcon = null;
 
         if (TextUtils.fileExists(SystemConfig.FileSystem.SETTING_DIR
@@ -170,7 +170,7 @@ public class Ttf2png {
             // FileOutputStream out = new FileOutputStream(outFile);
             // ImageIO.write(bimage, "PNG", out);
             // out.close();
-            int ok = cutImage(outFile, bimage, (int) textSize);
+            int ok = cutImage(outFile, bimage, (int) pngSize);
             if (ok == 1) {
                 System.out.println("字体" + wmFont.getName() + "中不存在'" + text
                         + "'字");

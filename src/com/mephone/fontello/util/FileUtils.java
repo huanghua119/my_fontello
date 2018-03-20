@@ -1,6 +1,7 @@
 package com.mephone.fontello.util;
 
 import java.io.File;
+import java.io.FileFilter;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -35,4 +36,20 @@ public class FileUtils {
         }
     }
 
+    public static File[] traverseDir(String path, final String end) {
+        File file = new File(path);
+        if (file.exists() && file.isDirectory()) {
+            return file.listFiles(new FileFilter() {
+                @Override
+                public boolean accept(File pathname) {
+                    if (TextUtils.isEmpty(end)) {
+                        return pathname.isFile();
+                    }
+                    return pathname.isFile()
+                            && pathname.getName().toLowerCase().endsWith(end);
+                }
+            });
+        }
+        return null;
+    }
 }
