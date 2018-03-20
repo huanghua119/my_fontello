@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileFilter;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -11,6 +12,7 @@ import java.util.UUID;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.mephone.fontello.bean.FileSort;
 import com.mephone.fontello.bean.FontSvg;
 import com.mephone.fontello.bean.FontelloSvg;
 import com.mephone.fontello.bean.SvgConfig;
@@ -44,6 +46,11 @@ public class FontelloService {
      * 切割svg图片
      */
     public static final String CMD_CUT_SVG = "cut_svg";
+
+    /**
+     * png图片重命名
+     */
+    public static final String CMD_REN_PNG = "ren_png";
 
     private Map<String, String> mHaiZiMap = new HashMap<String, String>();
 
@@ -87,6 +94,8 @@ public class FontelloService {
             png2svg();
         } else if (CMD_CUT_SVG.equals(cmd)) {
             cutSvg();
+        } else if (CMD_REN_PNG.equals(cmd)) {
+            renPng();
         }
     }
 
@@ -492,15 +501,10 @@ public class FontelloService {
      * 遍历data/png目录下的子目录，将png图片转化为svg文件
      */
     public void png2svg() {
-        File[] files = traversePngDir();
-        for (File file : files) {
-            if (file.exists() && file.isDirectory()) {
-                File[] pngs = file.listFiles();
-                for (File png : pngs) {
-                    if (png.exists() && png.getName().endsWith(".png")) {
-                        png2svg(png);
-                    }
-                }
+        List<File> files = getFiles(SystemConfig.FileSystem.PNG_DIR, ".png");
+        for (File png : files) {
+            if (png.exists() && png.isFile()) {
+                png2svg(png);
             }
         }
     }
@@ -522,17 +526,26 @@ public class FontelloService {
             out.mkdirs();
         }
 
+        String pbm = name.replace(".png", ".pbm");
         name = outDir + File.separator + name.replace(".png", ".svg");
 
         String cmd1 = "convert -flatten " + png.getAbsolutePath()
-                + " output.pbm";
-        String cmd2 = "potrace -s output.pbm -o " + name;
+                + " " + pbm;
+        String cmd2 = "potrace -s " + pbm + " -o " + name;
 
-        String cmd3 = "rm output.pbm";
+        File pbmFile = new File(pbm);
+
+        String cmd3 = "rm " + pbm;
+        String cmd4 = "del " + pbm;
 
         Cmd.run(cmd1, false);
         Cmd.run(cmd2, false);
-        Cmd.run(cmd3, false);
+        if (pbmFile.exists()) {
+            pbmFile.delete();
+        } else {
+            Cmd.run(cmd3, false);
+            Cmd.run(cmd4, false);
+        }
     }
 
     /**
@@ -611,6 +624,41 @@ public class FontelloService {
                                 SystemConfig.DefalutConfig.sCUT_SVG_HEIGHT);
                     }
                 }
+            }
+        }
+    }
+
+    private void renPng() {
+        List<File> fileList = getFiles(SystemConfig.FileSystem.PNG_DIR, ".png");
+        Collections.sort(fileList, new FileSort());
+        String hanzi_6763 = TextUtils.readFile(
+                SystemConfig.FileSystem.PNG_DIR + "ren_map.txt").trim();
+        hanzi_6763 = TextUtils.replaceBlank(hanzi_6763);
+
+        for (int i = 0; i < fileList.size(); i++) {
+            if (i < hanzi_6763.length()) {
+                String hanzi = hanzi_6763.charAt(i) + "";
+                File file = fileList.get(i);
+                if (!TextUtils.isHaizi(hanzi)) {
+                    hanzi = TextUtils.string2Unicode(hanzi);
+                }
+                File newFile = new File(file.getParent(), hanzi + ".png");
+                boolean success = file.renameTo(newFile);
+                if (!success) {
+                    MyLog.w("原文件:" + file.getName() + " 汉字:" + hanzi + " 映射表:"
+                            + (i + 1) + "  重命名失败,改为unicode命名!");
+
+                    String unicode = TextUtils.string2Unicode(hanzi);
+                    File newFile2 = new File(file.getParent(), unicode + ".png");
+                    success = file.renameTo(newFile2);
+                    if (!success) {
+                        MyLog.w("unicode重命名失败!" + " unicode:" + unicode);
+                    }
+                }
+            } else {
+                File file = fileList.get(i);
+                file.delete();
+                MyLog.w("多余空白文件 " + file.getName() + ",已删除!");
             }
         }
     }

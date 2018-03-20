@@ -33,4 +33,11 @@ fontello快速生成字体
     2. svgpath和svgpath.cmd文件复制到C:\Users用户名\AppData\Roaming\npm目录下
 
 
-## 4. 功能
+## 4. 安装potrace ,imagemagick
+#### ubuntu
+    sudo apt-get install potrace imagemagick
+#### win7
+    将目录下的ImageMagick-7.0.1-4-Q16-x64-dll.zip和potrace-1.15.win64.zip解压安装并设置环境变量
+        PATH后面添加D:\Program Files\ImageMagick-7.0.1-Q16和D:\Program Files\potrace-1.15.win64(D:\Program Files是安装目录)
+
+## 5. 功能

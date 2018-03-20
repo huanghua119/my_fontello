@@ -66,6 +66,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
     private JButton mCutPngButton;
     private JButton mCutSvgButton;
     private JButton mPng2SvgButton;
+    private JButton mRenPngButton;
     private JTextField mCutRowsText;
     private JTextField mCutColsText;
     private JTextField mCutWidthText;
@@ -196,6 +197,10 @@ public class FontelloFrame extends JFrame implements ActionListener {
         JPanel southPanel = new JPanel();
         southPanel.setLayout(new FlowLayout());
         mPng2SvgLayout.add(southPanel, BorderLayout.SOUTH);
+
+        mRenPngButton = new JButton("png重命名");
+        mRenPngButton.addActionListener(this);
+        southPanel.add(mRenPngButton);
 
         mCutSvgButton = new JButton("切割svg");
         mCutSvgButton.addActionListener(this);
@@ -363,6 +368,8 @@ public class FontelloFrame extends JFrame implements ActionListener {
             getContentPane().add(mFontelloLayout, BorderLayout.CENTER);
             MyLog.setTextArea(mFontelloTextArea);
             updateUI(mFontelloLayout);
+        } else if (e.getSource() == mRenPngButton) {
+            renPng();
         } else if (e.getSource() == mCutPngButton) {
             startCutPng();
         } else if (e.getSource() == mPng2SvgButton) {
@@ -533,6 +540,26 @@ public class FontelloFrame extends JFrame implements ActionListener {
                         + " 个svg文件, 点击 生成配置文件 生成config.json！或点击 一键生成 直接生成字库!");
             }
         }
+    }
+
+    private void renPng() {
+        mCutPngButton.setEnabled(false);
+        mPng2SvgButton.setEnabled(false);
+        mCutSvgButton.setEnabled(false);
+        mRenPngButton.setEnabled(false);
+        new Thread() {
+            @Override
+            public void run() {
+                super.run();
+                MyLog.w("开始重命名.....");
+                mService.doButtonCmd(FontelloService.CMD_REN_PNG, "");
+                MyLog.w("重命名完成,请查看data/png/目录");
+                mCutPngButton.setEnabled(true);
+                mPng2SvgButton.setEnabled(true);
+                mCutSvgButton.setEnabled(true);
+                mRenPngButton.setEnabled(true);
+            }
+        }.start();
     }
 
     private void startCutPng() {
