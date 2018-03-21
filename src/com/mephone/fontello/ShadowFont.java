@@ -26,6 +26,13 @@ import com.mephone.fontello.util.Ttf2png;
 
 public class ShadowFont {
 
+    public static void main(String[] args) {
+        //ShadowFont sf = new ShadowFont();
+        // sf.drawGB2312();
+    }
+
+    private static int OFFICE = 5;
+
     private float mTextSize = 50f;
     private float mPngSize = 60f;
     
@@ -117,19 +124,36 @@ public class ShadowFont {
             int width = shadow.getWidth(null);
             int height = shadow.getHeight(null);
             if (biWidth != width || biHeight != height) {
-                System.out.println("渐变色图片大小与文本图片大小不一置!");
-                MyLog.w("渐变色图片大小与文本图片大小不一置!");
+                System.out.println(pngPath + " 渐变色图片大小与文本图片大小不一置!");
+                MyLog.w(pngPath + " 渐变色图片大小与文本图片大小不一置!");
                 return;
             }
 
-            for (int i = 0; i < bi.getWidth(); i++) {
-                for (int j = 0; j < bi.getHeight(); j++) {
+            int mixX = biWidth;
+            int maxX = 0;
+            for (int i = 0; i < biWidth; i++) {
+                for (int j = 0; j < biHeight; j++) {
                     int rgb = bi.getRGB(i, j);
                     // System.out.println("rgb:" + rgb + " fillColor:"
                     if (fillColor.getRGB() == rgb) {
                         blackList.add(i + "_" + j);
+                    } else {
+                        int temp = i;
+                        if (temp < mixX) {
+                            mixX = temp;
+                        }
+                        temp = i;
+                        if (temp > maxX) {
+                            maxX = temp;
+                        }
                     }
                 }
+            }
+            if (mixX != 0) {
+                mixX = mixX - OFFICE;
+            }
+            if (maxX != width) {
+                maxX = maxX + OFFICE;
             }
 
             Image im = makeColorTransparent(shadow, blackList);
@@ -144,6 +168,11 @@ public class ShadowFont {
 
             g.drawImage(im, 0, 0, width, height, null);
             g.dispose();
+
+            if (mixX > 0 || maxX < width) {
+                bimage = bimage.getSubimage(mixX, 0, maxX - mixX, height);
+            }
+
             ImageIO.write(bimage, "png", outFile);
             System.out.println(outFile.getAbsolutePath() + " 生成成功!");
         } catch (Exception e) {
@@ -207,11 +236,11 @@ public class ShadowFont {
                     String out = SystemConfig.FileSystem.SHADOW_PATH
                             + TextUtils.getFileName(file) + File.separator + c
                             + ".png";
-                    if (new File(out).exists()) {
-                        System.out.println(out + " 已存在，不重复生成！");
-                        MyLog.w(out + " 已存在，不重复生成！");
-                        continue;
-                    }
+//                    if (new File(out).exists()) {
+//                        System.out.println(out + " 已存在，不重复生成！");
+//                        MyLog.w(out + " 已存在，不重复生成！");
+//                        continue;
+//                    }
                     Ttf2png.ttf2png(file, out, c, mTextSize, mPngSize);
                     if (!mRunning) {
                         MyLog.w("操作已中止");

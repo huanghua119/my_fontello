@@ -10,6 +10,7 @@ import java.awt.event.KeyEvent;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -36,6 +37,7 @@ public class ShadowFrame extends JPanel implements ActionListener {
     private JTextArea mShadowTextArea;
 
     private ShadowFont mShadowFont = null;
+    private FontelloFrame mRootFrame = null;
 
     private KeyAdapter mKeyAdapter = new KeyAdapter() {
         public void keyTyped(KeyEvent e) {
@@ -47,7 +49,8 @@ public class ShadowFrame extends JPanel implements ActionListener {
         }
     };
 
-    public ShadowFrame() {
+    public ShadowFrame(FontelloFrame frame) {
+        mRootFrame = frame;
         mShadowFont = new ShadowFont();
         setLayout(new BorderLayout());
 
@@ -129,6 +132,7 @@ public class ShadowFrame extends JPanel implements ActionListener {
                 mShadowFont.startMakeShadowFont();
                 mDrawPngButton.setEnabled(true);
                 mMakeShadowButton.setEnabled(true);
+                mRootFrame.toFront();
             }
         }).start();
     }
@@ -151,6 +155,7 @@ public class ShadowFrame extends JPanel implements ActionListener {
                 mShadowFont.drawGB2312();
                 mDrawPngButton.setEnabled(true);
                 mMakeShadowButton.setEnabled(true);
+                mRootFrame.toFront();
             }
         }).start();
     }

@@ -109,7 +109,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         createFontelloLayout();
         createMenuBar();
         createPngSvgLayout();
-        mShadowLayout = new ShadowFrame();
+        mShadowLayout = new ShadowFrame(this);
 
         MyLog.setTextArea(mFontelloTextArea);
         getContentPane().add(mFontelloLayout, BorderLayout.CENTER);

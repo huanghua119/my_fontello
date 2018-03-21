@@ -139,10 +139,10 @@ public class Ttf2png {
                 font = mCacheFont.get(key);
             } else {
                 font = Font.createFont(Font.TRUETYPE_FONT, wmFont);
-                font = font.deriveFont(textSize);
                 mCacheFont.put(key, font);
             }
 
+            font = font.deriveFont(textSize);
             g.setFont(font);
             FontMetrics metrics = new FontMetrics(font) {
                 private static final long serialVersionUID = 1L;
