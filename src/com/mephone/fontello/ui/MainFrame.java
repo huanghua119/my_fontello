@@ -40,11 +40,11 @@ import com.mephone.fontello.config.SystemConfig;
 import com.mephone.fontello.util.CommonUtils;
 import com.mephone.fontello.util.TextUtils;
 
-public class FontelloFrame extends JFrame implements ActionListener {
+public class MainFrame extends JFrame implements ActionListener {
     private static final long serialVersionUID = -1186812329395127121L;
 
-    private static final int M_WIDTH = 400;
-    private static final int M_HEIGHT = 400;
+    public static final int M_WIDTH = 400;
+    public static final int M_HEIGHT = 400;
 
     private JFileChooser mFileChooser = null;
 
@@ -95,7 +95,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         }
     };
 
-    public FontelloFrame() {
+    public MainFrame() {
         setDefaultCloseOperation(EXIT_ON_CLOSE);
         Dimension dim = this.getToolkit().getScreenSize();
         this.setBounds((int) (dim.getWidth() - M_WIDTH) / 2,
@@ -464,7 +464,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
         } else {
             MyLog.w("字库生成失败，请重试!");
         }
-        FontelloFrame.this.toFront();
+        MainFrame.this.toFront();
         mFontelloButton.setEnabled(true);
         mConfigButton.setEnabled(true);
         mSelectButton.setEnabled(true);
@@ -515,7 +515,7 @@ public class FontelloFrame extends JFrame implements ActionListener {
                     mFontelloButton.setEnabled(false);
                 }
                 if (!mOneFontello) {
-                    FontelloFrame.this.toFront();
+                    MainFrame.this.toFront();
                 }
                 mConfigButton.setEnabled(true);
                 mSelectButton.setEnabled(true);

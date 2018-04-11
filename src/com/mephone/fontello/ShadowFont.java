@@ -27,8 +27,8 @@ import com.mephone.fontello.util.Ttf2png;
 public class ShadowFont {
 
     public static void main(String[] args) {
-        //ShadowFont sf = new ShadowFont();
-        // sf.drawGB2312();
+//        ShadowFont sf = new ShadowFont();
+//        sf.drawGB2312();
     }
 
     private static int OFFICE = 5;
@@ -102,8 +102,7 @@ public class ShadowFont {
         List<String> blackList = new ArrayList<String>();
         File pngFile = new File(pngPath);
 
-        String outName = TextUtils.string2UnicodeHex(TextUtils
-                .getFileName(pngFile)) + ".png";
+        String outName = TextUtils.getFileName(pngFile) + ".png";
 
         File outFile = new File(
                 pngFile.getParent() + File.separator + "shadow", outName);
@@ -223,7 +222,7 @@ public class ShadowFont {
     private void startDrawText(String text) {
         MyLog.w("正在生成文字图片....");
         List<File> fileList = FontelloService.getInstance().getFiles(
-                SystemConfig.FileSystem.SHADOW_PATH, ".ttf", ".otf");
+                SystemConfig.FileSystem.SHADOW_PATH, ".ttf", ".otf", ".ttc");
 
         if (fileList != null && fileList.size() > 0) {
             for (int i = 0; i < text.length(); i++) {
@@ -234,7 +233,7 @@ public class ShadowFont {
                     }
                     String c = text.charAt(i) + "";
                     String out = SystemConfig.FileSystem.SHADOW_PATH
-                            + TextUtils.getFileName(file) + File.separator + c
+                            + TextUtils.getFileName(file) + File.separator + TextUtils.string2UnicodeHex(c)
                             + ".png";
 //                    if (new File(out).exists()) {
 //                        System.out.println(out + " 已存在，不重复生成！");

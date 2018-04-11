@@ -10,7 +10,7 @@ import org.jvnet.substance.skin.BusinessBlackSteelSkin;
 import org.jvnet.substance.skin.SubstanceBusinessBlueSteelLookAndFeel;
 import org.jvnet.substance.title.FlatTitlePainter;
 
-import com.mephone.fontello.ui.FontelloFrame;
+import com.mephone.fontello.ui.MainFrame;
 
 public class Main {
 
@@ -29,7 +29,7 @@ public class Main {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                FontelloFrame fontello = new FontelloFrame();
+                MainFrame fontello = new MainFrame();
                 fontello.setVisible(true);
             }
         });

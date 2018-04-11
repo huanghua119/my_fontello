@@ -24,8 +24,6 @@ import com.mephone.fontello.util.TextUtils;
 public class ShadowFrame extends JPanel implements ActionListener {
     private static final long serialVersionUID = 1L;
 
-    private static final int M_WIDTH = 400;
-
     private static float TEXT_SIZE = 50f;
     private static float PNG_SIZE = 60f;
 
@@ -37,7 +35,7 @@ public class ShadowFrame extends JPanel implements ActionListener {
     private JTextArea mShadowTextArea;
 
     private ShadowFont mShadowFont = null;
-    private FontelloFrame mRootFrame = null;
+    private MainFrame mRootFrame = null;
 
     private KeyAdapter mKeyAdapter = new KeyAdapter() {
         public void keyTyped(KeyEvent e) {
@@ -49,14 +47,14 @@ public class ShadowFrame extends JPanel implements ActionListener {
         }
     };
 
-    public ShadowFrame(FontelloFrame frame) {
+    public ShadowFrame(MainFrame frame) {
         mRootFrame = frame;
         mShadowFont = new ShadowFont();
         setLayout(new BorderLayout());
 
         JPanel northPanel = new JPanel();
         northPanel.setLayout(new BoxLayout(northPanel, BoxLayout.Y_AXIS));
-        northPanel.setBounds(0, 0, M_WIDTH, 30);
+        northPanel.setBounds(0, 0,MainFrame.M_WIDTH, 30);
         JPanel jpanelOne = new JPanel();
         jpanelOne.setLayout(new BoxLayout(jpanelOne, BoxLayout.X_AXIS));
         northPanel.add(Box.createVerticalStrut(5));
