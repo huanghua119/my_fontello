@@ -13,10 +13,7 @@ public class DrawTextForTTF {
         DrawTextForTTF dtt = new DrawTextForTTF();
         String text = TextUtils.readFile(DrawTextForTTF.class
                 .getResourceAsStream("/com/mephone/fontello/GB2312完整字库.txt"));
-        for (int i = 0; i < 500; i++) {
-            String c = text.charAt(i) + "";
-            dtt.startDrawText2(c);
-        }
+        dtt.startDrawText2(text);
     }
 
     private void startDrawText2(String text) {
@@ -24,12 +21,12 @@ public class DrawTextForTTF {
                 SystemConfig.FileSystem.DRAW_TTF, ".ttf", ".otf", ".ttc");
 
         if (fileList != null && fileList.size() > 0) {
-            for (int i = 0; i < text.length(); i++) {
-                for (File file : fileList) {
+            for (File file : fileList) {
+                for (int i = 0; i < text.length(); i++) {
                     String c = text.charAt(i) + "";
                     String out = SystemConfig.FileSystem.DRAW_PATH + "out/"
                             + TextUtils.getFileName(file) + "/" + c + ".png";
-                    Ttf2png.ttf2png(file, out, c, 64f, 64f);
+                    Ttf2png.ttf2png(file, out, c, 128f, 128f);
                 }
             }
         }
@@ -45,7 +42,7 @@ public class DrawTextForTTF {
                     String c = text.charAt(i) + "";
                     String out = SystemConfig.FileSystem.DRAW_PATH + "out/" + c
                             + "/" + TextUtils.getFileName(file) + ".png";
-                    Ttf2png.ttf2png(file, out, c, 80f, 80f);
+                    Ttf2png.ttf2png(file, out, c, 128f, 128f);
                 }
             }
         }

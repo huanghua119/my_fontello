@@ -87,14 +87,15 @@ public class CutImage {
                         break;
                     }
                     String name = fileNames.substring(index - 1, index);
+                    if (SystemConfig.DefalutConfig.sUNICODE_NAME) {
+                        name = TextUtils.string2UnicodeHex(name);
+                    }
                     fileName = targetDir + "/" + name + ".png";
                     MyLog.i("save unicode:" + name + " fileName:" + fileName);
                 }
-                if (i % 2 != 0) {
-                    file = new File(fileName);
-                    ImageIO.write(image, "PNG", file);
-                    list.add(file);
-                }
+                file = new File(fileName);
+                ImageIO.write(image, "PNG", file);
+                list.add(file);
             }
         }
         return new ImageDto(sWidth, sHeight, list);

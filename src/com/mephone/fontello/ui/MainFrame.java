@@ -17,6 +17,7 @@ import java.util.Properties;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -74,6 +75,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JTextField mCutSideWidthText;
     private JTextField mCutSideHeightText;
     private JTextArea mPng2SvgTextArea;
+    private JCheckBox mUnicodeName;
 
     private ShadowFrame mShadowLayout;
 
@@ -198,6 +200,15 @@ public class MainFrame extends JFrame implements ActionListener {
         jpanelThree.add(Box.createHorizontalStrut(10));
         jpanelThree.add(mCutSideHeightText);
         jpanelThree.add(Box.createHorizontalStrut(20));
+
+        JPanel jpanelFour = new JPanel();
+        jpanelFour.setLayout(new BoxLayout(jpanelFour, BoxLayout.X_AXIS));
+        northPanel.add(jpanelFour);
+        northPanel.add(Box.createVerticalStrut(5));
+        jpanelFour.add(Box.createHorizontalStrut(20));
+        jpanelFour.add(new JLabel("切割png文件以unicode码命名:"));
+        mUnicodeName = new JCheckBox();
+        jpanelFour.add(mUnicodeName);
 
         mPng2SvgLayout.add(northPanel, BorderLayout.NORTH);
 
@@ -634,6 +645,7 @@ public class MainFrame extends JFrame implements ActionListener {
         } else {
             SystemConfig.DefalutConfig.sPNG_BLACK_SIDE_HEIGHT = 0;
         }
+        SystemConfig.DefalutConfig.sUNICODE_NAME = mUnicodeName.isSelected();
         mCutPngButton.setEnabled(false);
         mPng2SvgButton.setEnabled(false);
         mCutSvgButton.setEnabled(false);

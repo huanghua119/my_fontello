@@ -115,6 +115,11 @@ public class SystemConfig {
         public static boolean sPNG_NO_NAME = true;
 
         /**
+         * 切割图片以unicode码命名
+         */
+        public static boolean sUNICODE_NAME = false;
+
+        /**
          * 是否是GB2312完整字库
          */
         public static boolean sGB2312_NAME = false;
