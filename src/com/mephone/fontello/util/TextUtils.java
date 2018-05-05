@@ -396,4 +396,13 @@ public class TextUtils {
         }
         return text1.equals(text2);
     }
+
+    public static boolean isNumericZidai(String str) {
+        for (int i = 0; i < str.length(); i++) {
+            if (!Character.isDigit(str.charAt(i))) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

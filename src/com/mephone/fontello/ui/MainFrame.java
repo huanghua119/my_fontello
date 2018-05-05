@@ -206,7 +206,7 @@ public class MainFrame extends JFrame implements ActionListener {
         northPanel.add(jpanelFour);
         northPanel.add(Box.createVerticalStrut(5));
         jpanelFour.add(Box.createHorizontalStrut(20));
-        jpanelFour.add(new JLabel("切割png文件以unicode码命名:"));
+        jpanelFour.add(new JLabel("重命名和切割png文件以unicode码命名:"));
         mUnicodeName = new JCheckBox();
         jpanelFour.add(mUnicodeName);
 
@@ -573,6 +573,7 @@ public class MainFrame extends JFrame implements ActionListener {
         mPng2SvgButton.setEnabled(false);
         mCutSvgButton.setEnabled(false);
         mRenPngButton.setEnabled(false);
+        SystemConfig.DefalutConfig.sUNICODE_NAME = mUnicodeName.isSelected();
         new Thread() {
             @Override
             public void run() {

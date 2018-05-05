@@ -639,8 +639,12 @@ public class FontelloService {
             if (i < hanzi_6763.length()) {
                 String hanzi = hanzi_6763.charAt(i) + "";
                 File file = fileList.get(i);
-                if (!TextUtils.isHaizi(hanzi)) {
-                    hanzi = TextUtils.string2Unicode(hanzi);
+                if (SystemConfig.DefalutConfig.sUNICODE_NAME) {
+                    hanzi = TextUtils.string2UnicodeHex(hanzi);
+                } else {
+                    if (!TextUtils.isHaizi(hanzi)) {
+                        hanzi = TextUtils.string2UnicodeHex(hanzi);
+                    }
                 }
                 File newFile = new File(file.getParent(), hanzi + ".png");
                 boolean success = file.renameTo(newFile);
@@ -648,7 +652,7 @@ public class FontelloService {
                     MyLog.w("原文件:" + file.getName() + " 汉字:" + hanzi + " 映射表:"
                             + (i + 1) + "  重命名失败,改为unicode命名!");
 
-                    String unicode = TextUtils.string2Unicode(hanzi);
+                    String unicode = TextUtils.string2UnicodeHex(hanzi);
                     File newFile2 = new File(file.getParent(), unicode + ".png");
                     success = file.renameTo(newFile2);
                     if (!success) {
