@@ -430,7 +430,14 @@ public class FontelloService {
                         if (fs.getName().length() == 1) {
                             fs.setUnicode(TextUtils.string2Unicode(fs.getName()));
                         } else {
-                            fs.setUnicode(fs.getName());
+                            String newName = fs.getName();
+                            try {
+                                newName = Integer.parseInt(fs.getName(), 16)
+                                        + "";
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            fs.setUnicode(newName);
                         }
                     }
                     result.add(fs);

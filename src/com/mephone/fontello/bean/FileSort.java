@@ -26,29 +26,26 @@ public class FileSort implements Comparator<File> {
         String[] split1 = n1.split(end);
         String[] split2 = n2.split(end);
 
-        String num1str = "";
-        String num2str = "";
+        int result = 0;
         for (int i = 0; i < split1.length; i++) {
             boolean is1Num = TextUtils.isNumericZidai(split1[i]);
             boolean is2Num = TextUtils.isNumericZidai(split2[i]);
-            if (is1Num) {
-                num1str += split1[i];
-            }
-            if (is2Num) {
-                num2str += split2[i];
+
+            if (is1Num && is2Num) {
+                try {
+                    int num1 = Integer.parseInt(split1[i]);
+                    int num2 = Integer.parseInt(split2[i]);
+                    if (num1 == num2) {
+                        continue;
+                    } else {
+                        result = num1 > num2 ? 1 : -1;
+                        break;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
             }
         }
-        try {
-            int num1 = Integer.parseInt(num1str);
-            int num2 = Integer.parseInt(num2str);
-            if (num1 == num2) {
-                return 0;
-            } else {
-                return num1 > num2 ? 1 : -1;
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return 0;
+        return result;
     }
 }
